@@ -1,10 +1,13 @@
+html {
+	-ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
 body {
 	overflow: hidden !important;
 }
 
 ::-webkit-scrollbar { 
     display: none; 
-
 }
 
 #row1 {
