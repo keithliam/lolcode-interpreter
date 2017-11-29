@@ -1,0 +1,171 @@
+body {
+	overflow: hidden !important;
+}
+
+::-webkit-scrollbar { 
+    display: none; 
+
+}
+
+#row1 {
+	height: 60vh;
+	margin: 0;
+}
+
+#row2 {
+	height: 40vh;
+	margin: 0;
+}
+
+.card {
+	border-radius: 0px;
+}
+
+.col1 {
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 33.33vw;
+	float: left;
+	display: inline-block;
+}
+
+#col2 {
+	width: 80%;
+	display: inline-block;
+}
+
+#col3 {
+	text-align: center;
+	width: 19%;
+	display: inline-block;
+}
+
+.card {
+	margin: 0;
+	height: 100%;
+	box-shadow: none !important;
+}
+
+.button1 {
+	opacity: 1;
+	box-shadow: none !important;
+	margin: 0 !important;
+	height: 31px !important;
+	font-size: 10px !important;
+	padding-right: 13px !important;
+	padding-left: 13px !important;
+	width: 100%;
+}
+
+.button1:hover {
+	opacity: 0.7;
+}
+
+.card-title {
+	height: 20px;
+}
+
+.material-icons {
+	font-size: 18px;
+}
+
+.inlinify {
+	display: inline-block !important;
+}
+
+.centerify {
+	text-align: center;
+}
+
+.scrollify {
+	overflow-y: auto;
+}
+
+.marginify {
+	margin-bottom: 10px;
+}
+
+.wrapify {
+  	overflow-wrap: break-word;
+}
+
+.container1 {
+	height: 45vh;
+}
+
+#textarea1 {
+	height: 33vh;
+	max-height: 33vh;
+	overflow-y: auto;
+	font-size: 13px;
+	color: #888;
+    border-bottom: 1px solid #888;
+}
+
+#textarea1:focus + label {
+     color: #F44336;
+}
+
+#textarea1 + label {
+     color: #888;
+}
+
+#textarea1:focus {
+     border-bottom: 2px solid #F44336;
+     box-shadow: 0 0px 0 0 #F44336;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.custom-file-upload {
+	width: 100%;
+    border: 1px solid #aaa;
+    color: #aaa;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+#output {
+	padding: 40px 61px 40px 61px !important;
+}
+
+#lineInput {
+	display: inline-block;
+  	all: initial;
+	font-size: 20px;
+	font-weight: 300;
+	font-family: Roboto;
+	color: white;
+	width: 100%;
+	overflow-wrap: break-word;
+ 	word-wrap: break-word;
+}
+
+table {
+	table-layout: fixed;
+}
+
+tr {
+ 	max-width: 100%;
+}
+
+td {
+	font-size: 20px;
+	font-weight: 300;
+	font-family: Roboto;
+	color: white;
+	padding:0;
+	overflow-wrap: break-word;
+ 	word-wrap: break-word;
+ 	max-width: 100%;
+ 	overflow-x: hidden;
+}
+
+.caret {
+	width: 35px;
+	vertical-align: top;
+}
