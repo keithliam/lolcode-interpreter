@@ -15,7 +15,7 @@
 		<script>
             var myApp = angular.module('myApp', ['luegg.directives'])
 
-            myApp.controller('thisController', ['$scope', function($scope){
+            myApp.controller('thisController', ['$scope', '$timeout', function($scope, $timeout){
                 angular.element(document).ready(function(){
                     $('#textarea1').focus()
                 })
@@ -40,8 +40,8 @@
                         $scope.$apply()
                     }
                 }
-                $scope.regexArr = [/\"[^\"]*\"/, /OBTW( .*)?/, /,/, /HAI/, /KTHXBYE/, /BTW .*/, /TLDR/, /I HAS A/, /ITZ/, / R /, /SUM OF/, /DIFF OF/, /PRODUKT OF/, /QUOSHUNT OF/, /MOD OF/, /BIGGR OF/, /SMALLR OF/, /BOTH OF/, /EITHER OF/, /WON OF/, /NOT/, /ANY OF/, /ALL OF/, /BOTH SAEM/, /DIFFRINT/, /IZ /, /SMOOSH/, /MAEK/, /IS NOW A/, / A /, /VISIBLE/, /GIMMEH/, /O RLY\?/, /YA RLY/, /MEBBE/, /NO WAI/, /OIC/, /WTF\?/, /OMG/, /OMGWTF/, /IM IN YR/, /UPPIN/, /NERFIN/, / YR /, / TIL /, /WILE/, /IM OUTTA YR/, / AN /, /HOW DUZ I/, / -?\d+\.\d*/, / -?\d+/, /(WIN|FAIL)/, /(YARN|NUMBR|NUMBAR|TROOF|NOOB)/, /MKAY/, /[a-zA-Z][a-zA-Z0-9_]*/]
-                $scope.regexStrArr = ["String Literal", "Comment Delimiter", "Newline", "Code Delimiter", "Code Delimiter", "Comment", "Comment Delimiter", "Variable Declaration", "Initial Assignment", "Assignment Keyword", "Sum Operator", "Difference Operator", "Product Operator", "Quotient Operator", "Modulo Operator", "Max Operator", "Min Operator", "And Operator", "Or Operator", "Xor Operator", "Not Operator", "Infinite Arity Or Operator", "Infinite Arity And Operator", "Is Equal Operator", "Is Not Equal Operator", "Comparison Keyword","Concatenation Keyword", "Typecasting Keyword", "Typecasting Keyword", "Assignment Operator", "Output Keyword", "Input Keyword", "If Keyword", "Then Keyword", "If-Else Keyword", "Else Keyword", "Conditional Delimiter", "Switch Case Keyword", "Case Keyword", "Default Case Keyword", "Loop Keyword", "Increment Keyword", "Decrement Keyword", "YR Keyword", "Til Keyword", "Loop Keyword", "Loop Delimiter", "An Keyword", "Function Keyword", "Float Literal", "Int Literal", "Boolean Literal", "Type Literal", "Infinite Arity Delimiter", "Variable Identifier"]
+                $scope.regexArr = [/\"[^\"]*\"/, /OBTW[^(TLDR),]*,?/, /BTW [^,]*,?/, /,/, /HAI/, /KTHXBYE/, /TLDR/, /I HAS A/, /ITZ/, / R /, /SUM OF/, /DIFF OF/, /PRODUKT OF/, /QUOSHUNT OF/, /MOD OF/, /BIGGR OF/, /SMALLR OF/, /BOTH OF/, /EITHER OF/, /WON OF/, /NOT/, /ANY OF/, /ALL OF/, /BOTH SAEM/, /DIFFRINT/, /IZ /, /SMOOSH/, /MAEK/, /IS NOW A/, / A /, /VISIBLE/, /GIMMEH/, /O RLY\?/, /YA RLY/, /MEBBE/, /NO WAI/, /OIC/, /WTF\?/, /OMG/, /OMGWTF/, /IM IN YR/, /UPPIN/, /NERFIN/, / YR /, / TIL /, /WILE/, /IM OUTTA YR/, / AN /, /HOW DUZ I/, / -?\d+\.\d*/, / -?\d+/, /(WIN|FAIL)/, /(YARN|NUMBR|NUMBAR|TROOF|NOOB)/, /MKAY/, /[a-zA-Z][a-zA-Z0-9_]*/]
+                $scope.regexStrArr = ["String Literal", "Comment Delimiter", "Comment", "Newline", "Code Delimiter", "Code Delimiter", "Comment Delimiter", "Variable Declaration", "Initial Assignment", "Assignment Keyword", "Sum Operator", "Difference Operator", "Product Operator", "Quotient Operator", "Modulo Operator", "Max Operator", "Min Operator", "And Operator", "Or Operator", "Xor Operator", "Not Operator", "Infinite Arity Or Operator", "Infinite Arity And Operator", "Is Equal Operator", "Is Not Equal Operator", "Comparison Keyword","Concatenation Keyword", "Typecasting Keyword", "Typecasting Keyword", "Assignment Operator", "Output Keyword", "Input Keyword", "If Keyword", "Then Keyword", "If-Else Keyword", "Else Keyword", "Conditional Delimiter", "Switch Case Keyword", "Case Keyword", "Default Case Keyword", "Loop Keyword", "Increment Keyword", "Decrement Keyword", "YR Keyword", "Til Keyword", "Loop Keyword", "Loop Delimiter", "An Keyword", "Function Keyword", "Float Literal", "Int Literal", "Boolean Literal", "Type Literal", "Infinite Arity Delimiter", "Variable Identifier"]
                 $scope.lexemesArray = []
                 $scope.lexemesDisplay = []
                 $scope.isComment = 0
@@ -54,7 +54,6 @@
                     }
                     return spaces
                 }
-                //lexical analyzer
                 $scope.getLexemes = function(line){
                     if($scope.isComment == 0 && line){
                         // console.log(line)
@@ -67,11 +66,15 @@
                                 matcher = line.match($scope.regexArr[ctr])
                                 if(matcher){
                                     if(ctr == 1){
+                                        // console.log("=====")
+                                        // console.log(matcher[0])
                                         $scope.isComment = 1
                                     }
                                     matcher["ctr"] = ctr
                                     lineArray.push(matcher)
+                                    // console.log(lineArray)
                                     line = line.replace(matcher[0], $scope.getSpaces(matcher[0]))
+                                    // console.log(line)
                                     break
                                 }
                             }
@@ -79,6 +82,8 @@
                         }
                         if(lineArray.length){
                             $scope.sortlineArray(lineArray)
+                            // console.log(lineArray)
+                            // return "error"
                         }
                     } else {
                         var matcher = line.match(/TLDR/)
@@ -117,6 +122,8 @@
                         }
                     }
                     $scope.pushToLexemesArray(lineArray)
+                    // console.log(lineArray)
+                    // return "error"
                 }
                 $scope.pushToLexemesArray = function(lineArray){
                     for(i = 0; i < lineArray.length; i++){
@@ -124,6 +131,11 @@
                         if(lineArray[i].ctr == 1){
                             var str1 = matcher[0].replace(/OBTW /, "")
                             str1 = str1.replace(/OBTW/, "")
+                            var commaFlag = false
+                            if(str1.match(/,/)){
+                                commaFlag = true
+                                str1 = str1.replace(",", "")
+                            }
                             matcher[0] = str1
                             $scope.lexemesArray.push({
                                 lexeme: "OBTW",
@@ -139,8 +151,13 @@
                             matcher[0] = "TIL"
                         } else if(matcher[0] == " AN "){
                             matcher[0] = "AN"
-                        } else if(lineArray[i].ctr == 5){
+                        } else if(lineArray[i].ctr == 2){
                             var str1 = matcher[0].replace(/BTW /, "")
+                            var commaFlag = false
+                            if(str1.match(/,/)){
+                                commaFlag = true
+                                str1 = str1.replace(",", "")
+                            }
                             matcher[0] = str1
                             $scope.lexemesArray.push({
                                 lexeme: "BTW",
@@ -151,10 +168,10 @@
                         } else if(lineArray[i].ctr == 0){
                             var str1 = matcher[0]
                             str1 = str1.replace(/\"/g, "")
-
                         } else if(lineArray[i].ctr == 50 || lineArray[i].ctr == 49){
                             matcher[0] = matcher[0].slice(1, matcher[0].length)
                         }
+
                         if(lineArray[i].ctr == 0){
                             $scope.lexemesArray.push({
                                 lexeme: "\"",
@@ -168,20 +185,32 @@
                                 lexeme: "\"",
                                 classification: "String Delimiter"
                             })
-                        } else if(lineArray[i].ctr == 5){
+                        } else if(lineArray[i].ctr == 2){
                             $scope.lexemesArray.push({
                                 lexeme: matcher[0],
                                 classification: $scope.regexStrArr[lineArray[i].ctr]
                             })
+                            if(commaFlag){
+                                $scope.lexemesArray.push({
+                                    lexeme: ",",
+                                    classification: "Newline"
+                                })
+                            }
 
                         } else if(lineArray[i].ctr == 1){
+                            // console.log("--> " + matcher[0])
                             if(matcher[0]){
                                 $scope.lexemesArray.push({
                                     lexeme: matcher[0],
                                     classification: "Multiline Comment"
                                 })
                             }
-
+                            if(commaFlag){
+                                $scope.lexemesArray.push({
+                                    lexeme: ",",
+                                    classification: "Newline"
+                                })
+                            }
                         } else if(lineArray[i].ctr != 1){
                             $scope.lexemesArray.push({
                                 lexeme: matcher[0],
@@ -189,8 +218,9 @@
                             })
                         }
                     }
+                    // console.log($scope.lexemesArray)
+                    // return "error"
                 }
-                //parser
                 $scope.parser = function(lexemesArray){
                     var i = 0
                     var commentFlag = false
@@ -198,16 +228,21 @@
                     var lineCtr = 0
                     var j = lexemesArray.length-1
                     var lineArray = []
-                    while ((lexemesArray[i].classification == "Comment" || lexemesArray[i].classification == "Comment Delimiter" || lexemesArray[i].classification == "Multiline Comment" || lexemesArray[i].classification == "Comment Keyword" || lexemesArray[i].classification == "Newline") && i < lexemesArray.length-1){
+                    while ((lexemesArray[i].classification == "Comment" || lexemesArray[i].classification == "Comment Delimiter" || lexemesArray[i].classification == "Multiline Comment" || lexemesArray[i].classification == "Comment Keyword" || lexemesArray[i].classification == "Newline") && i < lexemesArray.length - 1){
                         i++
                         lineCtr++
                     }
+                    // console.log("============================================================")
+                    // console.log(lexemesArray[i])
+                    // return "error"
                     if(lexemesArray[i].lexeme == "HAI"){
                         i++ //-----------------------------------------------------------------------------------------------------!!!!!!!!!!!!
                         lineCtr++
                         while (lexemesArray[j].classification == "Comment" || lexemesArray[j].classification == "Comment Keyword" || lexemesArray[j].classification == "Comment Delimiter" || lexemesArray[j].classification == "Multiline Comment" || lexemesArray[j].classification == "Newline"){
                             j--
                         }
+                        // console.log(lexemesArray)
+                        // return "error"
                         if(lexemesArray[j].lexeme == "KTHXBYE"){
                             while (i < j){
                                 i++
@@ -297,7 +332,7 @@
                     } else {
                         $scope.terminalOutput.push({ content: "Line " + lineCtr + ": Syntax Error! Missing HAI!" })
                         return "error"
-                    } //missing HAI
+                    }
                 }
                 $scope.validateLine = function(line, lineNo){
                     // console.log(line)
@@ -810,21 +845,28 @@
                     var ctr1
                     while(ctr < array.length){
                         if(array[ctr].classification == "Variable Identifier"){
-                            for(ctr1 = 0; ctr1 < symbolTable.length; ctr1++){
-                                if(array[ctr].lexeme == symbolTable[ctr1].identifier){
-                                    if(parseFloat(symbolTable[ctr1].value)){
-                                        array[ctr].lexeme = symbolTable[ctr1].value
-                                        array[ctr].classification = "Int Literal"
-                                        break
-                                    } else {
-                                        $scope.terminalOutput.push({ content: "Error! \"" + array[ctr].lexeme + "\" is not an integer nor a float" })
+                            if($scope.symbolTable.length != 0){
+                                for(ctr1 = 0; ctr1 < symbolTable.length; ctr1++){
+                                    if(array[ctr].lexeme == symbolTable[ctr1].identifier){
+                                        if(array[ctr].lexeme == symbolTable[ctr1].identifier && $scope.symbolTable[ctr1].type == "NOOB"){
+                                            $scope.terminalOutput.push({ content: "Error! Variable \"" + array[ctr].lexeme + "\" has no value"})
+                                            return "error"
+                                        } else if(parseFloat(symbolTable[ctr1].value)){
+                                            array[ctr].lexeme = symbolTable[ctr1].value
+                                            array[ctr].classification = "Int Literal"
+                                            break
+                                        } else {
+                                            $scope.terminalOutput.push({ content: "Error! \"" + array[ctr].lexeme + "\" is not an integer nor a float" })
+                                            return "error"
+                                        }
+                                    }
+                                    if(ctr1 == symbolTable.length - 1){
+                                        $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + array[ctr].lexeme + "\"" })
                                         return "error"
                                     }
                                 }
-                                if(ctr1 == symbolTable.length - 1){
-                                    $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + array[ctr].lexeme + "\"" })
-                                    return "error"
-                                }
+                            } else {
+                                $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + array[ctr].lexeme + "\""})
                             }
                             ctr++
                         } else if(array[ctr].classification == "An Keyword"){
@@ -891,16 +933,27 @@
                     // console.log("----------<><><><><><>-----------")
                     while(ctr < array.length){
                         if(array[ctr].classification == "Variable Identifier"){
-                            for(ctr1 = 0; ctr1 < symbolTable.length; ctr1++){
-                                if(array[ctr].lexeme == symbolTable[ctr1].identifier){
-                                    array[ctr].lexeme = symbolTable[ctr1].value
-                                    array[ctr].classification = "String Literal"
-                                    break
+                            if(symbolTable.length != 0){
+                                for(ctr1 = 0; ctr1 < symbolTable.length; ctr1++){
+                                    // console.log("kdfhjsklahdgjklshad-------------+++++++++++")
+                                    // console.log($scope.symbolTable[ctr1].type)
+                                    if(array[ctr].lexeme == symbolTable[ctr1].identifier && $scope.symbolTable[ctr1].type == "NOOB"){
+                                        $scope.terminalOutput.push({ content: "Error! Variable \"" + array[ctr].lexeme + "\" has no value"})
+                                        return "error"
+                                    } else if(array[ctr].lexeme == symbolTable[ctr1].identifier){
+                                        array[ctr].lexeme = symbolTable[ctr1].value
+                                        // console.log(array)
+                                        // return "error"
+                                        array[ctr].classification = symbolTable[ctr1].type
+                                        break
+                                    }
+                                    if(ctr1 == symbolTable.length - 1){
+                                        $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + array[ctr].lexeme + "\"" })
+                                        return "error"
+                                    }
                                 }
-                                if(ctr1 == symbolTable.length - 1){
-                                    $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + array[ctr].lexeme + "\"" })
-                                    return "error"
-                                }
+                            } else {
+                                $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + array[ctr].lexeme + "\""})
                             }
                             ctr++
                         } else if(array[ctr].classification == "An Keyword" || array[ctr].classification == "String Delimiter"){
@@ -1083,11 +1136,12 @@
                     var accArray = []
                     var value1
                     var condCtr = 0
-                    console.log(array)
+                    // console.log(array)
                     for(ctr = 0; ctr < array.length; ctr++){
+                        // if(ctr>11){$scope.terminalOutput.push({ content: " shet" + $scope.symbolTable[0].type + " " })}
                         if (array[ctr].classification == "If Keyword") {
-                            if ($scope.symbolTable[$scope.symbolTable.length - 1].value == "WIN") {
-                                console.log("TRUE", ctr)
+                            if($scope.symbolTable[$scope.symbolTable.length - 1].value == "WIN") {
+                                // console.log("TRUE", ctr)
                                 ctr += 2
                                 while (!(condCtr == 0 && array[ctr].classification == "Else Keyword")) {   
                                     if (array[ctr].classification == "If Keyword") {
@@ -1098,14 +1152,15 @@
                                     accArray.push(array[ctr])
                                     ctr++
                                 }
-                                console.log(ctr)
+                                // console.log(ctr)
                                 $scope.semanticAnalyzer(accArray)
                                 accArray = []
                                 while (array[ctr].classification != "Conditional Delimiter") {
                                     ctr++
                                 }
                             } else {
-                                console.log("FALSE")
+                                // console.log($scope.symbolTable[$scope.symbolTable.length - 1].value)
+                                // console.log("FALSE")
                                 while (array[ctr].classification != "Else Keyword") {
                                     ctr++
                                 }
@@ -1131,61 +1186,67 @@
                             }
                             $scope.semanticAnalyzer(accArray)
                             accArray = []
-                        } else if(array[ctr].classification == "Variable Declaration"){
-                          if(array[ctr + 2].classification == "Initial Assignment"){
-                              // console.log("-------> ctr(" + ctr + ") + 3 + ctr1(" + ctr1 + ") ----> " + array[ctr + 3 + ctr1].classification)
+                        } else if(array[ctr].classification == "Variable Declaration" || array[ctr].classification == "Assignment Keyword"){
+                            if(array[ctr].classification == "Assignment Keyword"){
+                                ctr = ctr - 2
+                            }
+                            // console.log(array[ctr + 2].classification)
+                          if(array[ctr + 2].classification == "Initial Assignment" || array[ctr + 2].classification == "Assignment Keyword"){
+                            if(array[ctr + 2].classification == "Assignment Keyword"){
+                                for(ctr1 = 0; ctr1 < $scope.symbolTable.length; ctr1++){
+                                    if(ctr1 == $scope.symbolTable.length - 1 && array[ctr + 1].lexeme != $scope.symbolTable[ctr1].identifier){
+                                        $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + array[ctr + 1].lexeme + "\"" })
+                                        return "error"
+                                    }
+                                }
+                            }
                               ctr1 = 0
                               while(array[ctr + 3 + ctr1].classification != "Newline"){
-                                  // console.log("--> ctr(" + ctr + ") + 3 + ctr1(" + ctr1 + ") ----> " + array[ctr + 3 + ctr1].classification)
                                   accArray.push(array[ctr + 3 + ctr1])
                                   ctr1++
-                                  // console.log("--->" + ctr1)
-                                  // console.log(accArray)
                               }
-                              // console.log("djhslfakjsdhjkflhlkjdsahf--------------")
-                              // console.log(accArray)
-                              // console.log("dksjhafkldsafjlhdsakfhsdkl-------------")
-                              // console.log($scope.symbolTable)
-                              // console.log("dsafkdsalk" + accArray[0].classification + " " + ctr + " ")
                               if(accArray[0].classification == "Int Literal" ||
                                   accArray[0].classification == "Float Literal" ||
                                   accArray[0].classification == "String Delimiter" ||
                                   accArray[0].classification == "Boolean Literal"){
                                   if($scope.symbolTable.length == 0){
-                                      // console.log("---------string----->")
-                                      // console.log(accArray)
                                       if(accArray[0].classification == "String Delimiter"){
                                           $scope.symbolTable.push({
                                               identifier:     array[ctr + 1].lexeme,
-                                              value:          accArray[1].lexeme
+                                              value:          accArray[1].lexeme,
+                                              type:             "String Literal"           
                                           })
                                       } else {
                                           $scope.symbolTable.push({
                                               identifier:     array[ctr + 1].lexeme,
-                                              value:          accArray[0].lexeme
+                                              value:          accArray[0].lexeme,
+                                              type:             accArray[0].classification
                                           })
                                       }
                                   } else {
-                                      for(ctr1 = 0; ctr1 < $scope.symbolTable.length; ctr1++){
-                                          if(array[ctr + 1].lexeme == $scope.symbolTable[ctr1].identifier){
-                                              // console.log("HAHSJAHDKJAHDKJASLH")
-                                              // console.log(accArray[0].classification)
-                                              if(accArray[0].classification == "String Delimiter"){
-                                                  // console.log(accArray[1].lexeme)
-                                                  // console.log($scope.symbolTable[ctr1])
-                                                  $scope.symbolTable[ctr1].value = accArray[1].lexeme
-                                              } else {
-                                                  $scope.symbolTable[ctr1].value = accArray[0].lexeme
-                                              }
-                                              break
+                                    for(ctr1 = 0; ctr1 < $scope.symbolTable.length; ctr1++){
+                                      if(array[ctr + 1].lexeme == $scope.symbolTable[ctr1].identifier){
+                                          // console.log("HAHSJAHDKJAHDKJASLH")
+                                          // console.log(accArray[0].classification)
+                                          if(accArray[0].classification == "String Delimiter"){
+                                              // console.log(accArray[1].lexeme)
+                                              // console.log($scope.symbolTable[ctr1])
+                                              $scope.symbolTable[ctr1].value = accArray[1].lexeme
+                                              $scope.symbolTable[ctr1].type = accArray[1].classification
+                                          } else {
+                                              $scope.symbolTable[ctr1].value = accArray[0].lexeme
+                                              $scope.symbolTable[ctr1].type = accArray[0].classification
                                           }
-                                          if(ctr1 == $scope.symbolTable.length - 1){
-                                              $scope.symbolTable.push({
-                                                  identifier:     array[ctr + 1].lexeme,
-                                                  value:          accArray[0].lexeme
-                                              })
-                                          }
+                                          break
                                       }
+                                      if(ctr1 == $scope.symbolTable.length - 1){
+                                          $scope.symbolTable.push({
+                                              identifier:     array[ctr + 1].lexeme,
+                                              value:          accArray[0].lexeme,
+                                              type:             accArray[0].classification
+                                          })
+                                      }
+                                    }
                                   }
                               } else if(accArray[0].classification == "Variable Identifier"){
                                   // console.log("over here")
@@ -1194,12 +1255,14 @@
                                           for(ctr3 = 0; ctr3 < $scope.symbolTable.length; ctr3++){
                                               if(array[ctr + 1].lexeme == $scope.symbolTable[ctr3].identifier){
                                                   $scope.symbolTable[ctr3].value = $scope.symbolTable[ctr1].value
+                                                  $scope.symbolTable[ctr3].type = $scope.symbolTable[ctr1].classification
                                                   break
                                               }
                                               if(ctr3 == $scope.symbolTable.length - 1){
                                                   $scope.symbolTable.push({
                                                       identifier:     array[ctr + 1].lexeme,
-                                                      value:          $scope.symbolTable[ctr1].value
+                                                      value:          $scope.symbolTable[ctr1].value,
+                                                      type:             $scope.symbolTable[ctr1].type
                                                   })
                                               }
                                           }
@@ -1232,18 +1295,21 @@
                                       if($scope.symbolTable.length == 0){
                                           $scope.symbolTable.push({
                                               identifier:     array[ctr + 1].lexeme,
-                                              value:          value1
+                                              value:          value1,
+                                              type:            "Boolean Literal"
                                           })
                                       } else {
                                           for(ctr3 = 0; ctr3 < $scope.symbolTable.length; ctr3++){
                                               if(array[ctr + 1].lexeme == $scope.symbolTable[ctr3].identifier){
                                                   $scope.symbolTable[ctr3].value = value1
+                                                  $scope.symbolTable[ctr3].type = "Boolean Literal"
                                                   break
                                               }
                                               if(ctr3 == $scope.symbolTable.length - 1){
                                                   $scope.symbolTable.push({
                                                       identifier:     array[ctr + 1].lexeme,
-                                                      value:          value1
+                                                      value:          value1,
+                                                      type:             "Boolean Literal"
                                                   })
                                               }
                                           }
@@ -1307,7 +1373,7 @@
                                           while(accArray[0].classification == "Not Operator"){
                                               expressionArray.push(accArray[0])
                                               accArray.splice(0, 1)
-                                              console.log("Not Removed")
+                                              // console.log("Not Removed")
                                           }
                                           if(accArray[0].classification == "And Operator" ||
                                               accArray[0].classification == "Or Operator" ||
@@ -1315,19 +1381,19 @@
                                               accArray[0].classification == "Is Equal Operator" ||
                                               accArray[0].classification == "Is Not Equal Operator"){
                                               operands = operands + 2
-                                              console.log(operands)
+                                              // console.log(operands)
                                               expressionArray.push(accArray[0])
                                               accArray.splice(0, 1)
                                           }
-                                          console.log("---------------------->")
-                                          console.log(accArray[0])
+                                          // console.log("---------------------->")
+                                          // console.log(accArray[0])
                                           while(operands != 0 || infiniteFlag != -1){
                                               // return "elj"
-                                              console.log(accArray[0])
+                                              // console.log(accArray[0])
                                               expressionArray.push(accArray[0])
                                               if(accArray[0].classification == "Not Operator"){
                                                   accArray.splice(0, 1)
-                                                  console.log("Not Removed")
+                                                  // console.log("Not Removed")
                                               } else if(infiniteFlag == operands && (accArray[0].classification == "Boolean Literal" || accArray[0].classification == "Variable Identifier")){
                                                   // console.log("fds")
                                                   accArray.splice(0, 1)
@@ -1335,7 +1401,7 @@
                                                   // console.log(accArray[0])
                                                   operands--
                                                   accArray.splice(0, 1)
-                                                  console.log("minus one operand = " + operands)
+                                                  // console.log("minus one operand = " + operands)
                                                   // console.log(accArray[0])
                                                   // console.log(infiniteFlag + " " + operands)
                                               } else if(accArray[0].classification == "Infinite Arity And Operator" || accArray[0].classification == "Infinite Arity Or Operator"){
@@ -1362,7 +1428,7 @@
                                                   accArray.splice(0, 1)
                                               }
                                           }
-                                          console.log(expressionArray, "hey")
+                                          // console.log(expressionArray, "hey")
                                           var value2 = $scope.getCondValue(expressionArray, $scope.symbolTable)
                                           // console.log("-----------------------------> " + value2)
                                           if(value2 != "error"){
@@ -1381,20 +1447,30 @@
                                   if($scope.symbolTable.length == 0){
                                       $scope.symbolTable.push({
                                           identifier:     array[ctr + 1].lexeme,
-                                          value:          value1
+                                          value:          value1,
+                                          type:             "String Literal"
                                       })
                                   } else {
                                       for(ctr1 = 0; ctr1 < $scope.symbolTable.length; ctr1++){
                                           if(array[ctr + 1].lexeme == $scope.symbolTable[ctr1].identifier){
                                               $scope.symbolTable[ctr1].value = value1
+                                              $scope.symbolTable[ctr1].type = "String Literal"
                                               break
                                           }
                                           if(ctr1 == $scope.symbolTable.length - 1){
                                               $scope.symbolTable.push({
                                                   identifier:     array[ctr + 1].lexeme,
-                                                  value:          value1
+                                                  value:          value1,
+                                                  type:             "String Literal"
                                               })
                                           }
+                                      }
+                                      if($scope.symbolTable.length == 0){
+                                        $scope.symbolTable.push({
+                                            identifier:     array[ctr + 1].lexeme,
+                                            value:          value1,
+                                            type:             "String Literal"
+                                        })
                                       }
                                   }
                               } else {
@@ -1405,7 +1481,8 @@
                                       if($scope.symbolTable.length == 0){
                                           $scope.symbolTable.push({
                                               identifier:     array[ctr + 1].lexeme,
-                                              value:          value1
+                                              value:          value1,
+                                              type:             parseFloat(value1) % 1 == 0? "Int Literal" : "Float Literal"
                                           })
                                       } else {
                                           for(ctr3 = 0; ctr3 < $scope.symbolTable.length; ctr3++){
@@ -1416,7 +1493,8 @@
                                               if(ctr3 == $scope.symbolTable.length - 1){
                                                   $scope.symbolTable.push({
                                                       identifier:     array[ctr + 1].lexeme,
-                                                      value:          value1
+                                                      value:          value1,
+                                                      type:             parseFloat(value1) % 1 == 0? "Int Literal" : "Float Literal"
                                                   })
                                               }
                                           }
@@ -1426,49 +1504,69 @@
                                   }
                               }
                               accArray = []
-                          }
-													else {
-                              for(ctr1 = 0; ctr1 < $scope.symbolTable.length; ctr1++){
-                                  // console.log("sdafhjksad")
-                                  if(array[ctr + 1].lexeme == $scope.symbolTable[ctr1].identifier){
-                                      $scope.symbolTable[ctr1].value = "NOOB"
-                                      break
+                          } else {
+                                if($scope.symbolTable.length != 0){
+                                  for(ctr1 = 0; ctr1 < $scope.symbolTable.length; ctr1++){
+                                      // console.log("sdafhjksad")
+                                      if(array[ctr + 1].lexeme == $scope.symbolTable[ctr1].identifier){
+                                          $scope.symbolTable[ctr1].value = ""
+                                          $scope.symbolTable[ctr1].type = "NOOB"
+                                          break
+                                      }
+                                      if(ctr1 == $scope.symbolTable.length - 1 && array[ctr + 1].lexeme != $scope.symbolTable[ctr1].identifier){
+                                          $scope.symbolTable.push({
+                                              identifier:     array[ctr + 1].lexeme,
+                                              value:          "",
+                                              type:             "NOOB"
+                                          })
+                                      }
                                   }
-                                  if(ctr1 == $scope.symbolTable.length - 1 && array[ctr + 1].lexeme != $scope.symbolTable[ctr1].identifier){
-                                      $scope.symbolTable.push({
-                                          identifier:     array[ctr + 1].lexeme,
-                                          value:          "NOOB"
-                                      })
-                                  }
-                              }
+                                } else {
+                                    $scope.symbolTable.push({
+                                        identifier:     array[ctr + 1].lexeme,
+                                        value:          "",
+                                        type:             "NOOB"
+                                    })
+                                }
                           }
+                          ctr = ctr + 2
                         } else if(ctr > 0 && array[ctr - 1].classification == "Newline" &&
                             (array[ctr].classification == "Boolean Literal" || array[ctr].classification == "Variable Identifier") &&
                             array[ctr + 1].classification == "Newline"){
-                            console.log("fdksjh")
+                            // console.log("fdksjh")
                             if(array[ctr].classification == "Variable Identifier"){
-                                for(ctr1 = 0; ctr1 < $scope.symbolTable.length; ctr1++){
-                                    if($scope.symbolTable[ctr1].identifier == array[ctr].lexeme){
-                                        if($scope.symbolTable[ctr1].value == "NOOB" || $scope.symbolTable[ctr1].value == ""){
-                                            $scope.terminalOutput.push({ content: "Error! Variable \"" + array[ctr].lexeme + "\" has no value" })
+                                if($scope.symbolTable.length != 0){
+                                    for(ctr1 = 0; ctr1 < $scope.symbolTable.length; ctr1++){
+                                        if($scope.symbolTable[ctr1].identifier == array[ctr].lexeme){
+                                            if($scope.symbolTable[ctr1].type == "NOOB" || $scope.symbolTable[ctr1].value == ""){
+                                                $scope.terminalOutput.push({ content: "Error! Variable \"" + array[ctr].lexeme + "\" has no value" })
+                                                return "error"
+                                            } else if($scope.symbolTable.type != "Boolean Literal"){
+                                                $scope.symbolTable.push({
+                                                    identifier:     "IT",
+                                                    value:          $scope.symbolTable[ctr1].value,
+                                                    type:           "Boolean Literal"
+                                                })
+                                                break
+                                            } else {
+                                                $scope.terminalOutput.push({ content: "Error! Variable \"" + $array[ctr].lexeme + "\" is not Boolean" })
+                                                return "error"
+                                            }
+                                        }
+                                        if(ctr1 == $scope.symbolTable.length - 1 == 0 && $scope.symbolTable[$scope.symbolTable.length - 1].identifier != array[ctr].lexeme){
+                                            $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + array[ctr].lexeme + "\"" })
                                             return "error"
-                                        } else {
-                                            $scope.symbolTable.push({
-                                                identifier:     "IT",
-                                                value:          $scope.symbolTable[ctr1].value
-                                            })
-                                            break
                                         }
                                     }
-                                    if(ctr1 == $scope.symbolTable.length - 1 == 0 && $scope.symbolTable[$scope.symbolTable.length - 1].identifier != array[ctr].lexeme){
-                                        $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + array[ctr].lexeme + "\"" })
-                                        return "error"
-                                    }
+                                } else {
+                                    $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + array[ctr].lexeme + "\"" })
+                                    return "error"
                                 }
                             } else {
                                 $scope.symbolTable.push({
                                     identifier:     "IT",
-                                    value:          array[0].lexeme
+                                    value:          array[ctr].lexeme,
+                                    type:           "Boolean Literal"
                                 })
                             }
                         } else if(ctr > 1 && array[ctr - 1].classification == "Newline" &&
@@ -1491,16 +1589,21 @@
                           }
                           // console.log("jkshakljfhd")
                           // console.log(accArray)
+                          // return "error"
                           value1 = $scope.getCondValue(accArray, $scope.symbolTable)
                           if(value1 != "error"){
                               $scope.symbolTable.push({
                                   identifier:     "IT",
-                                  value:          value1
+                                  value:          value1,
+                                  type:            "Boolean Literal"
                               })
                           } else {
                               break
                           }
                           accArray = []
+                          // console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
+                          // console.log($scope.symbolTable)
+                          // return "error"
                         } else if(array[ctr].classification == "Output Keyword"){
                           var visibleStr = ""
                           var opCtr = 0
@@ -1602,14 +1705,7 @@
                                               opArr = []
                                           }
                                       }
-                                      // console.log("<-------------------->")
-                                      // console.log(opArr)
-
-                                      // console.log("dsfa")
                                   }
-                                  // console.log("VARI!!!!!!!!!!!")
-                                  // console.log(accArray)
-
                               } else if(accArray[ctr1].lexeme == "AN"){
                                   if(opCtr > 0){
                                       opArr.push(accArray[ctr1])
@@ -1620,56 +1716,10 @@
                           accArray = []
                           $scope.symbolTable.push({
                               identifier:     "IT",
-                              value:          visibleStr
+                              value:          visibleStr,
+                              type:             "String Literal"
                           })
                           $scope.terminalOutput.push({ content: $scope.symbolTable[$scope.symbolTable.length - 1].value })
-                        } else if(array[ctr].classification == "Assignment Keyword"){   // ----------------------------------------THIS!!!!!!!!!!!!!!!!!!!!!!!!!
-                          if(array[ctr + 1].classification == "Variable Identifier"){
-                              for(ctr1 = 0; ctr1 < $scope.symbolTable.length; ctr1++){
-                                  if(array[ctr + 1].lexeme == $scope.symbolTable[ctr1].identifier){
-                                      value1 = $scope.symbolTable[ctr1].value
-                                      break
-                                  }
-                                  if(ctr1 == $scope.symbolTable.length - 1){
-                                      $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + array[ctr+1].lexeme + "\"" })
-                                      return "error"
-                                  }
-                              }
-                          }
-                        							else if(array[ctr + 1].classification == "Sum Operator" ||
-                                          array[ctr + 1].classification == "Difference Operator" ||
-                                          array[ctr + 1].classification == "Product Operator" ||
-                                          array[ctr + 1].classification == "Quotient Operator" ||
-                                          array[ctr + 1].classification == "Modulo Operator" ||
-                                          array[ctr + 1].classification == "Min Operator" ||
-                                          array[ctr + 1].classification == "Max Operator"){
-                              accArray = []
-                              ctr1 = 1
-                              while(array[ctr + ctr1].classification != "Newline"){
-                                  accArray.push(array[ctr + ctr1])
-                                  ctr1++
-                              }
-                              // console.log(accArray)
-                              value1 = $scope.getExprValue(accArray, $scope.symbolTable)
-                              // console.log(value1)
-                              accArray = []
-                          }
-                        							else if(array[ctr + 1].classification == "Concatenation Keyword"){
-                              value1 = ""
-                              for(ctr1 = 1; array[ctr + ctr1].classification != "Newline"; ctr1++){
-                                  if(array[ctr + ctr1].classification == "String Literal"){
-                                      value1 = value1 + array[ctr + ctr1].lexeme
-                                  }
-                              }
-                          }
-                        							else {
-                              value1 = array[ctr + 1].lexeme
-                          }
-                          for(ctr1 = 0; ctr1 < $scope.symbolTable.length; ctr1++){
-                              if(array[ctr - 1 ].lexeme == $scope.symbolTable[ctr1].identifier){
-                                  $scope.symbolTable[ctr1].value = value1
-                              }
-                          }
                         } else if(array[ctr].classification == "Input Keyword"){
                           var input = $scope.getTerminalInput()
                           if($scope.symbolTable.length != 0){
@@ -1684,8 +1734,7 @@
                                   }
                               }
                               $scope.terminalOutput.push({ content: input })
-                          }
-                        							else {
+                          } else {
                               $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + array[ctr + 1].lexeme + "\"" })
                               return "error"
                           }
@@ -1701,27 +1750,32 @@
                     var newFlag = 0
                     $scope.lexemesArray = []
                     $scope.lexemesDisplay = []
+                    $scope.isComment = 0
                     for(ctr = 0; ctr < lines.length; ctr++){
-                        /*if($scope.lexemesArray.length != 0 && ($scope.lexemesArray[$scope.lexemesArray.length - 1].lexeme == "\\n" || $scope.lexemesArray[$scope.lexemesArray.length - 1].lexeme == ",")){
-                            flag = 1
-                        } else {
-                            flag = 0
-                        }*/
                         $scope.getLexemes(lines[ctr])
-                        //if(flag == 0 && ctr != lines.length - 1){
-                            $scope.lexemesArray.push({
-                                lexeme: "\\n",
-                                classification: "Newline"
-                            })
-                        //}
+                        $scope.lexemesArray.push({
+                            lexeme: "\\n",
+                            classification: "Newline"
+                        })
+                        // console.log(ctr)
                     }
+                    // console.log($scope.lexemesArray)
+                    // return "error"
                     if($scope.parser($scope.lexemesArray) != "error"){
                         for(ctr = 0; ctr < $scope.lexemesArray.length; ctr ++){
                             if($scope.lexemesArray[ctr].classification != "Newline"){
                                 $scope.lexemesDisplay.push($scope.lexemesArray[ctr])
                             }
+                            if($scope.lexemesArray[ctr].classification == "Comment Keyword" || $scope.lexemesArray[ctr].classification == "Comment" || $scope.lexemesArray[ctr].classification == "Comment Delimiter" || $scope.lexemesArray[ctr].classification == "Multiline Comment"){
+                                $scope.lexemesArray.splice(ctr, 1)
+                                ctr--
+                            }
                         }
-                        // console.log("-------------------------------------------")
+                    // console.log("----------- lexemes array ------------")
+                    // console.log($scope.lexemesArray)
+                    // console.log($scope.lexemesDisplay)
+                    // console.log("-------------------------------")
+                    // return "error"
                         $scope.semanticAnalyzer($scope.lexemesArray)
                     }
                 }
@@ -1731,8 +1785,8 @@
                     $scope.$apply()
                     $scope.add()
                 }
-                $scope.terminalOutput = [{content:"You have an error in your sql syntax"}, {content:"Error! Ugly user found."}]
-                // $scope.terminalOutput = []
+                // $scope.terminalOutput = [{content:"You have an error in your sql syntax"}, {content:"Error! Ugly user found."}]
+                $scope.terminalOutput = []
                 $scope.addLine = function(){
                     $scope.terminalOutput.push({ content: $scope.terminalInput })
                     $scope.terminalInput = ""
@@ -1743,6 +1797,34 @@
                 }
                 $scope.focusCode = function(){
                     $('#textarea1').focus()
+                }
+                $scope.addTabs = function(){
+                    var ctr
+                            console.log('length: ' + $scope.textarea.length)
+                    var cursorStart = $('#textarea1').get(0).selectionStart
+                    var cursorEnd = $('#textarea1').get(0).selectionEnd
+                    event.preventDefault()
+                    console.log('end:' + cursorEnd + ' last: ' + $scope.textarea.length - 1)
+                    if(cursorStart != cursorEnd){
+                        $scope.textarea = $scope.textarea.slice(0, cursorStart) +  $scope.textarea.slice(cursorEnd, $scope.textarea.length)
+                    }
+                    for(ctr = $scope.textarea.length - 1; ctr >= 0; ctr--){
+                        if($scope.textarea[ctr] == '\n' || ctr == 0){
+                            var tabs = ''
+                            var save = ctr
+                            for(ctr = ctr + 1; ctr < $scope.textarea.length && ($scope.textarea[ctr] == ' ' || $scope.textarea[ctr] == '\t'); ctr++){
+                                tabs = tabs + $scope.textarea[ctr]
+                            }
+                            console.log(cursorStart + ' - ' + cursorEnd)
+                            console.log('length: ' + $scope.textarea.length)
+                            console.log('tabs: >' + tabs + '<')
+                            $scope.textarea = $scope.textarea.slice(0, cursorStart) + '\n' + tabs + $scope.textarea.slice(cursorStart, $scope.textarea.length)
+                            $timeout(function(){
+                                $('#textarea1').get(0).setSelectionRange(cursorStart + tabs.length + 1, cursorStart + tabs.length + 1)
+                            }, 0)
+                            break
+                        }
+                    }
                 }
             }])
 		</script>
@@ -1768,7 +1850,7 @@
                         <br>
                         <br>
                         <div class="input-field col s12">
-                            <textarea id="textarea1" ng-keydown="($event.ctrlKey || $event.metaKey) && $event.keyCode == 13 && splitCode()" onkeydown="if(event.keyCode===9){var v=this.value,s=this.selectionStart,e=this.selectionEnd;this.value=v.substring(0, s)+'\t'+v.substring(e);this.selectionStart=this.selectionEnd=s+1;return false;}" class="scrollify materialize-textarea" ng-model="textarea"></textarea>
+                            <textarea id="textarea1" ng-keydown="(($event.ctrlKey || $event.metaKey) && $event.keyCode == 13 && splitCode()) || ($event.keyCode == 13 && addTabs())" onkeydown="if(event.keyCode===9){var v=this.value,s=this.selectionStart,e=this.selectionEnd;this.value=v.substring(0, s)+'\t'+v.substring(e);this.selectionStart=this.selectionEnd=s+1;return false;}" class="scrollify materialize-textarea" ng-model="textarea"></textarea>
                             <label for="textarea1">Code</label>
                         </div>
 					</div>
