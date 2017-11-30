@@ -1800,24 +1800,25 @@
                 }
                 $scope.addTabs = function(){
                     var ctr
-                            console.log('length: ' + $scope.textarea.length)
+                    // console.log('length: ' + $scope.textarea.length)
                     var cursorStart = $('#textarea1').get(0).selectionStart
                     var cursorEnd = $('#textarea1').get(0).selectionEnd
                     event.preventDefault()
-                    console.log('end:' + cursorEnd + ' last: ' + $scope.textarea.length - 1)
+                    // console.log('end:' + cursorEnd + ' last: ' + $scope.textarea.length - 1)
                     if(cursorStart != cursorEnd){
                         $scope.textarea = $scope.textarea.slice(0, cursorStart) +  $scope.textarea.slice(cursorEnd, $scope.textarea.length)
                     }
-                    for(ctr = $scope.textarea.length - 1; ctr >= 0; ctr--){
+                    for(ctr = cursorStart - 1; ctr >= 0; ctr--){
                         if($scope.textarea[ctr] == '\n' || ctr == 0){
                             var tabs = ''
                             var save = ctr
+                            // console.log(">" + $scope.textarea[ctr] + "<>" + $scope.textarea[cursorStart - 1])
                             for(ctr = ctr + 1; ctr < $scope.textarea.length && ($scope.textarea[ctr] == ' ' || $scope.textarea[ctr] == '\t'); ctr++){
                                 tabs = tabs + $scope.textarea[ctr]
                             }
-                            console.log(cursorStart + ' - ' + cursorEnd)
-                            console.log('length: ' + $scope.textarea.length)
-                            console.log('tabs: >' + tabs + '<')
+                            // console.log(cursorStart + ' - ' + cursorEnd)
+                            // console.log('length: ' + $scope.textarea.length)
+                            // console.log('tabs: >' + tabs + '<')
                             $scope.textarea = $scope.textarea.slice(0, cursorStart) + '\n' + tabs + $scope.textarea.slice(cursorStart, $scope.textarea.length)
                             $timeout(function(){
                                 $('#textarea1').get(0).setSelectionRange(cursorStart + tabs.length + 1, cursorStart + tabs.length + 1)
