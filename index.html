@@ -1139,7 +1139,7 @@
                                     value:          $scope.symbolTable[i].value
                                 })
                             }
-                            while ((array[ctr].classification != "Case Keyword" && $scope.symbolTable[$scope.symbolTable.length-1].value != array[ctr+1].lexeme) && array[ctr].classification != "Default Case Keyword") {
+                            while (!(array[ctr].classification == "Case Keyword" && $scope.symbolTable[$scope.symbolTable.length-1].value == array[ctr+1].lexeme) && array[ctr].classification != "Default Case Keyword") {
                                 ctr++
                             }
                             accArray = []
