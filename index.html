@@ -810,7 +810,7 @@
                     }
                 }
                 $scope.getExprValue = function(array1){
-                    var array = array1.slice()
+                    var array = array1.slice(0)
                     var ctr = 0
                     var ctr1
                     while(ctr < array.length){
@@ -890,7 +890,7 @@
                     return parseFloat(array[0].lexeme)
                 }
                 $scope.getCondValue = function(array1){
-                    var array = array1.slice()
+                    var array = array1.slice(0)
                     var ctr = 0
                     var ctr1
                     while(ctr < array.length){
@@ -1726,7 +1726,7 @@
                         }
                     }
                     if($scope.parser($scope.lexemesArray) != "error"){
-                        $scope.semanticAnalyzer($scope.lexemesArray)
+                        $scope.semanticAnalyzer(JSON.parse(JSON.stringify($scope.lexemesArray)))
                     }
                 }
                 $scope.fileName = "Upload Code"
