@@ -1116,13 +1116,13 @@
                             if($scope.symbolTable[$scope.symbolTable.length - 1].value == "WIN"){
                                 // console.log("TRUE", ctr)
                                 // console.log("----------------------")
-                                while(!(condCtr == 1 && (array[ctr].classification == "Else Keyword" || array[ctr].classification == "Conditional Delimiter"))){  
+                                while(!(condCtr == 1 && (array[ctr].classification == "Else Keyword" || array[ctr].classification == "Conditional Delimiter"))){
                                     if(array[ctr].classification == "If Keyword" || array[ctr].classification == "Switch Case Keyword"){
                                         condCtr++
                                     } else if(array[ctr].classification == "Conditional Delimiter"){
                                         condCtr--
                                     }
-                                    accArray.push(array[ctr]) 
+                                    accArray.push(array[ctr])
                                     ctr++
                                 }
                                 // console.log(accArray)
@@ -1176,12 +1176,14 @@
                             }
                             ctr++
                         } else if(array[ctr].classification == "Switch Case Keyword") {
+                            console.log(array)
                             while (!(array[ctr].classification == "Case Keyword" && ($scope.symbolTable[$scope.symbolTable.length-1].value == array[ctr+1].lexeme || ($scope.symbolTable[$scope.symbolTable.length-1].type == "String Literal" && $scope.symbolTable[$scope.symbolTable.length-1].value == array[ctr+2].lexeme))) && array[ctr].classification != "Default Case Keyword"){
+                                console.log($scope.symbolTable[$scope.symbolTable.length-1].value, array[ctr+1].lexeme, ctr)
                                 ctr++
                             }
                             accArray = []
                             while(!(condCtr == 0 && array[ctr].classification == "Conditional Delimiter")) {
-                                if (array[ctr].lexeme == "GTFO") {
+                                if (array[ctr].lexeme == "GTFO" && condCtr == 0) {
                                     break
                                 } else if ( array[ctr].classification == "If Keyword" || array[ctr].classification == "Switch Case Keyword") {
                                     condCtr++
@@ -1243,7 +1245,7 @@
                                           $scope.symbolTable.push({
                                               identifier:     array[ctr + 1].lexeme,
                                               value:          accArray[1].lexeme,
-                                              type:             "String Literal"           
+                                              type:             "String Literal"
                                           })
                                       } else {
                                           $scope.symbolTable.push({

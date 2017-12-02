@@ -1,0 +1,54 @@
+else if (array[ctr].classification == "Switch Case Keyword") {
+    for (ctr1 = 2; array[ctr-ctr1].classification != "Newline"; ctr1++) {
+        accArray.push(array[ctr-ctr1])
+    }
+    if (accArray.length == 1) {
+        for (var i = 0; i < $scope.symbolTable.length; i++) {
+            if (accArray[0].lexeme == $scope.symbolTable[i].identifier) {
+                break
+            }
+        }
+        if (i == $scope.symbolTable.length) {
+          $scope.symbolTable.push({
+              identifier:			"IT",
+              value:					accArray[0].lexeme
+          })
+        } else {
+          $scope.symbolTable.push({
+              identifier:     "IT",
+              value:          $scope.symbolTable[i].value
+          })
+        }
+    }
+    else {
+      value1 = $scope.semanticAnalyzer(accArray)
+      $scope.symbolTable.push({
+        identifier:     "IT",
+        value:          value1
+      })
+    }
+    while (!(array[ctr].classification == "Case Keyword" && ($scope.symbolTable[$scope.symbolTable.length-1].value == array[ctr+1].lexeme || array[ctr+1].classification == "String Delimiter")) && array[ctr].classification != "Default Case Keyword") {
+        ctr++
+    }
+    ctr += 2
+    accArray = []
+    while( !(condCtr == 0 && array[ctr].classification == "Conditional Delimiter")) {
+        if (array[ctr].lexeme == "GTFO") {
+            break
+        } else if ( array[ctr].classification == "If Keyword" || array[ctr].classification == "Switch Case Keyword") {
+            condCtr++
+        } else if ( array[ctr].classification == "Conditional Delimiter") {
+            condCtr--
+        }
+        accArray.push(array[ctr])
+        ctr++
+    }
+    console.log(accArray)
+    $scope.semanticAnalyzer(accArray)
+    console.log("end of switch")
+    accArray = []
+    while(array[ctr].classification != "Conditional Delimiter") {
+        ctr++
+    }
+    condCtr = 0
+}
