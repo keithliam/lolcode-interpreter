@@ -56,7 +56,6 @@
                 }
                 $scope.getLexemes = function(line){
                     if($scope.isComment == 0 && line){
-                        // console.log(line)
                         var lineArray = [];
                         var stopper = line.match(/[a-zA-Z0-9_]+/)
                         var matcher
@@ -66,15 +65,11 @@
                                 matcher = line.match($scope.regexArr[ctr])
                                 if(matcher){
                                     if(ctr == 2){
-                                        // console.log("=====")
-                                        // console.log(matcher[0])
                                         $scope.isComment = 1
                                     }
                                     matcher["ctr"] = ctr
                                     lineArray.push(matcher)
-                                    // console.log(lineArray)
                                     line = line.replace(matcher[0], $scope.getSpaces(matcher[0]))
-                                    // console.log(line)
                                     break
                                 }
                             }
@@ -82,8 +77,6 @@
                         }
                         if(lineArray.length){
                             $scope.sortlineArray(lineArray)
-                            // console.log(lineArray)
-                            // return "error"
                         }
                     } else {
                         var matcher = line.match(/TLDR/)
@@ -122,8 +115,6 @@
                         }
                     }
                     $scope.pushToLexemesArray(lineArray)
-                    // console.log(lineArray)
-                    // return "error"
                 }
                 $scope.pushToLexemesArray = function(lineArray){
                     for(i = 0; i < lineArray.length; i++){
@@ -198,7 +189,6 @@
                             }
 
                         } else if(lineArray[i].ctr == 2){
-                            // console.log("--> " + matcher[0])
                             if(matcher[0]){
                                 $scope.lexemesArray.push({
                                     lexeme: matcher[0],
@@ -218,8 +208,6 @@
                             })
                         }
                     }
-                    // console.log($scope.lexemesArray)
-                    // return "error"
                 }
                 $scope.parser = function(lexemesArray){
                     var i = 0
@@ -232,17 +220,12 @@
                         i++
                         lineCtr++
                     }
-                    // console.log("============================================================")
-                    // console.log(lexemesArray[i])
-                    // return "error"
                     if(lexemesArray[i].lexeme == "HAI"){
-                        i++ //-----------------------------------------------------------------------------------------------------!!!!!!!!!!!!
+                        i++
                         lineCtr++
                         while (lexemesArray[j].classification == "Comment" || lexemesArray[j].classification == "Comment Keyword" || lexemesArray[j].classification == "Comment Delimiter" || lexemesArray[j].classification == "Multiline Comment" || lexemesArray[j].classification == "Newline"){
                             j--
                         }
-                        // console.log(lexemesArray)
-                        // return "error"
                         if(lexemesArray[j].lexeme == "KTHXBYE"){
                             while (i < j){
                                 i++
@@ -264,7 +247,6 @@
                                     i++
                                     lineCtr++
                                     if(lexemesArray[++i].classification != "Then Keyword"){
-                                        // console.log(lexemesArray[i])
                                         $scope.terminalOutput.push({ content: "Line " + lineCtr + ": Syntax Error! Missing YA RLY for O RLY?" })
                                         ifSwitchArr = []
                                         return "error"
@@ -288,7 +270,6 @@
                                     i++
                                     lineCtr++
                                     if(lexemesArray[++i].classification != "Case Keyword"){
-                                        // console.log(lexemesArray[i])
                                         $scope.terminalOutput.push({ content: "Line " + lineCtr + ": Syntax Error! Missing OMG for WTF?" })
                                         ifSwitchArr = []
                                         return "error"
@@ -311,10 +292,8 @@
                                     lineCtr++
                                     lineArray.push(lexemesArray[i])
                                     if($scope.validateLine(lineArray, lineCtr)){
-                                        // $scope.terminalOutput.push({ content: "Line " + lineCtr, "is valid" })
                                         lineArray = []
                                     } else {
-                                        // $scope.terminalOutput.push({ content: "Line " + lineCtr + ": Syntax Error!" })
                                         return "error"
                                     }
                                 } else {
@@ -324,18 +303,17 @@
                             if(ifSwitchArr.length > 0 || commentFlag){
                                 $scope.terminalOutput.push({ content: "Line " + lineCtr + ": Syntax Error! An IF-statement or multiline comment is unclosed." })
                                 return "error"
-                            } //unclosed if-statement or multi-line comment
+                            }
                         } else {
                             $scope.terminalOutput.push({ content: "Line " + lineCtr + ": Syntax Error! Missing KTHXBYE!" })
                             return "error"
-                        } //missing KTHXBYE
+                        }
                     } else {
                         $scope.terminalOutput.push({ content: "Line " + lineCtr + ": Syntax Error! Missing HAI!" })
                         return "error"
                     }
                 }
                 $scope.validateLine = function(line, lineNo){
-                    // console.log(line)
                     if(line[0].classification == "Variable Declaration"){
                         if(line[1].classification != "Variable Identifier"){
                             return false
@@ -393,7 +371,6 @@
                                      line[i].classification == "Float Literal" ||
                                      line[i].classification == "Variable Identifier"){
                                 opArray.push(line[i])
-                                // console.log(opArray)
                                 if(opCtr == 0){
                                     if(!$scope.getExpr(opArray)){
                                         $scope.terminalOutput.push({ content: "Line " + lineNo + ": Syntax Error! Invalid operation in SMOOSH!" })
@@ -441,10 +418,6 @@
                             }
                         }
                         for(j = 1; j < line.length; j++){
-                            // console.log(j, line[j])
-                            // console.log(opCtr, opArray)
-                            // console.log(boolCtr, boolFlag, boolArray)
-                            // console.log(smooshFlag, smooshArray)
                             if(line[j].classification == "String Literal"){
                                 if(opArray.length > 0){
                                     $scope.terminalOutput.push({ content: "Line " + lineNo + ": Syntax Error! Operation inside VISIBLE is invalid!" })
@@ -680,7 +653,6 @@
                             }
                         }
                         if(thereIs == 0){
-                            // console.log("THERE IS NONE")
                             return false
                         }
                     }
@@ -769,7 +741,6 @@
                                 ){
                                 array.splice(ctr, 4)
                                 array.splice(ctr, 0, { lexeme: "WIN", classification: "Boolean Literal" })
-                                // console.log("found")
                                 thereIs = 1
                                 break
                             } else if(
@@ -790,7 +761,6 @@
                                 array.splice(ctr, 4)
                                 array.splice(ctr, 0, { lexeme: "WIN", classification: "Boolean Literal" })
                                 thereIs = 1
-                                // console.log("Found and or xor")
                                 break
                             }
                         }
@@ -840,9 +810,6 @@
                     }
                 }
                 $scope.getExprValue = function(array1, symbolTable){
-
-                    // console.log("-----------------")
-                    // console.log(array1)
                     var array = array1.slice()
                     var ctr = 0
                     var ctr1
@@ -875,7 +842,6 @@
                             ctr++
                         } else if(array[ctr].classification == "An Keyword" || array[ctr].classification == "String Delimiter"){
                             array.splice(ctr, 1)
-                            // return "error"
                         } else if(array[ctr].classification == "String Literal" && isNaN(array[ctr].lexeme)){
                             $scope.terminalOutput.push({ content: "Error! The string \"" + array[ctr].lexeme + "\" is not an integer nor a float" })
                             return "error"
@@ -883,13 +849,9 @@
                             ctr++
                         }
                     }
-                    // console.log(array)
-                    // return "error"
                     ctr = 0
                     var result
                     while(ctr < array.length){
-                        // console.log("---------->")
-                        // console.log(array)
                         if(     ctr >= 2
                             &&
                                 (array[ctr].classification == "Int Literal" || array[ctr].classification == "Float Literal" || array[ctr].classification == "String Literal")
@@ -904,7 +866,6 @@
                                 array[ctr - 2].classification == "Max Operator" ||
                                 array[ctr - 2].classification == "Min Operator")
                             ){
-                            // console.log("found")
                             if(array[ctr - 2].classification == "Sum Operator"){
                                 result = parseFloat(array[ctr - 1].lexeme) + parseFloat(array[ctr].lexeme)
                             } else if(array[ctr - 2].classification == "Difference Operator"){
@@ -920,7 +881,6 @@
                             } else {
                                 result = parseFloat(array[ctr].lexeme) < parseFloat(array[ctr - 1].lexeme)? parseFloat(array[ctr].lexeme) : parseFloat(array[ctr - 1].lexeme)
                             }
-                            // console.log(result)
                             array.splice(ctr - 2, 3, { lexeme: result, classification: "Int Literal" })
                             ctr = ctr - 2
                         } else {
@@ -1643,7 +1603,6 @@
                                       if(opArr.length == 0){
                                           visibleStr = visibleStr + accArray[ctr1].lexeme
                                       } else {
-                                          // console.log()
                                           opArr.push(accArray[ctr1])
                                           if(opCtr == 0 &&
                                                   (opArr[0].classification == "Sum Operator" ||
