@@ -950,15 +950,12 @@
                                         if($scope.symbolTable[ctr1].type == "NOOB" || $scope.symbolTable.value == ""){
                                             $scope.terminalOutput.push({ content: "Error! Variable \"" + array[ctr].lexeme + "\" has no value"})
                                             return "error"
-                                        } else if($scope.symbolTable[ctr1].value == "WIN" || $scope.symbolTable[ctr1].value == "FAIL" || !isNaN($scope.symbolTable[ctr1].value)){
+                                        } else {
                                             array[ctr].lexeme = symbolTable[ctr1].value
                                             // console.log(array)
                                             // return "error"
                                             array[ctr].classification = symbolTable[ctr1].type
                                             break
-                                        } else {
-                                            $scope.terminalOutput.push({ content: "Error! \"" + $scope.symbolTable[ctr1].value + "\" is not boolean nor an integer nor a float"})
-                                            return "error"
                                         }
                                     }
                                     if(ctr1 == symbolTable.length - 1){
@@ -1024,7 +1021,7 @@
                         // console.log(ctr)
                         // console.log(array)
                         // console.log("---------><--------------")
-                        if(ctr >= 1 && array[ctr - 1].classification == "Not Operator" && array[ctr].classification == "Boolean Literal"){
+                        if(ctr >= 1 && array[ctr - 1].classification == "Not Operator" && (array[ctr].classification == "Boolean Literal" || array[ctr].classification == "String Literal")){
                             array.splice(ctr - 1, 2, { lexeme: array[ctr].lexeme == "WIN"? "FAIL" : "WIN", classification:     "Boolean Literal" })
                             // array.splice(ctr - 1, 2, object1)
                             ctr--
@@ -1167,6 +1164,7 @@
                 $scope.symbolTable = []
                 $scope.semanticAnalyzer = function(array){
                     // console.log(array)
+
                     var ctr
                     var ctr1 = 0
                     var ctr3
@@ -1218,17 +1216,11 @@
                                 return "error"
                             }
                         } else if (array[ctr].classification == "Switch Case Keyword") {
-                            // // console.log($scope.symbolTable[$scope.symbolTable.length-1].type)
-                            // console.log($scope.symbolTable[$scope.symbolTable.length-1].value + " == " + array[ctr+4].lexeme)
                             while (!(array[ctr].classification == "Case Keyword" && ($scope.symbolTable[$scope.symbolTable.length-1].value == array[ctr+1].lexeme || ($scope.symbolTable[$scope.symbolTable.length-1].type == "String Literal" && $scope.symbolTable[$scope.symbolTable.length-1].value == array[ctr+2].lexeme))) && array[ctr].classification != "Default Case Keyword"){
-                                // console.log($scope.symbolTable[$scope.symbolTable.length-1].type + " == " + array[ctr+2].lexeme)
                                 ctr++
                             }
-                            // console.log()
                             accArray = []
                             while(!(condCtr == 0 && array[ctr].classification == "Conditional Delimiter")) {
-                                // console.log(array[ctr])
-                                // console.log(condCtr)
                                 if (array[ctr].lexeme == "GTFO") {
                                     break
                                 } else if ( array[ctr].classification == "If Keyword" || array[ctr].classification == "Switch Case Keyword") {
@@ -1240,18 +1232,16 @@
                                 ctr++
                             }
                             // console.log(accArray)
+                            // return "error"
                             $scope.semanticAnalyzer(accArray)
-                            // console.log("end of switch")
                             accArray = []
                             while(array[ctr].classification != "Conditional Delimiter") {
                                 ctr++
                             }
                         } else if(array[ctr].classification == "Variable Declaration" || array[ctr].classification == "Assignment Keyword"){
-                            // console.log("!!!!!!!!")
                             if(array[ctr].classification == "Assignment Keyword"){
                                 ctr = ctr - 2
                             }
-                            // console.log(array[ctr + 2].classification + " - " + array[ctr + 1].lexeme)
                             if(array[ctr + 2].classification == "Assignment Keyword" && array[ctr + 1].lexeme == "IT"){
                                 $scope.symbolTable.push({
                                     identifier:     "IT",
@@ -1259,7 +1249,6 @@
                                     type:           ""
                                 })
                             }
-                            // console.log(array[ctr + 2].classification)
                           if(array[ctr + 2].classification == "Initial Assignment" || array[ctr + 2].classification == "Assignment Keyword"){
                             if(array[ctr + 2].classification == "Assignment Keyword"){
                                 if($scope.symbolTable.length != 0){
@@ -1636,11 +1625,13 @@
                             if(array[ctr].classification == "Variable Identifier"){
                                 if($scope.symbolTable.length != 0){
                                     for(ctr1 = 0; ctr1 < $scope.symbolTable.length; ctr1++){
+                                        // console.log($scope.symbolTable[ctr1].identifier + " == " + array[ctr].lexeme)
                                         if($scope.symbolTable[ctr1].identifier == array[ctr].lexeme){
+                                            // console.log("PASOK")
                                             if($scope.symbolTable[ctr1].type == "NOOB" || $scope.symbolTable[ctr1].value == ""){
                                                 $scope.terminalOutput.push({ content: "Error! Variable \"" + array[ctr].lexeme + "\" has no value" })
                                                 return "error"
-                                            } else if($scope.symbolTable[ctr1].type != "Boolean Literal"){
+                                            } else {
                                                 $scope.symbolTable.push({
                                                     identifier:     "IT",
                                                     value:          $scope.symbolTable[ctr1].value,
@@ -1649,7 +1640,7 @@
                                                 break
                                             }
                                         }
-                                        if(ctr1 == $scope.symbolTable.length - 1 == 0 && $scope.symbolTable[$scope.symbolTable.length - 1].identifier != array[ctr].lexeme){
+                                        if(ctr1 == $scope.symbolTable.length - 1 && $scope.symbolTable[ctr1].identifier != array[ctr].lexeme){
                                             $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + array[ctr].lexeme + "\"" })
                                             return "error"
                                         }
@@ -2048,7 +2039,7 @@
                                     {{ token.value }}
                                 </div>
                                 <div class="wrapify col s4">
-                                    {{ token.type.replace(" Literal", "") }}
+                                    {{ token.type.replace(" Literal", "").replace("Int", "Integer") }}
                                 </div>
                             </div>
                         </div>
