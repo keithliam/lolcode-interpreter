@@ -1738,8 +1738,13 @@
                 $scope.terminalOutput = []
                 $scope.addLine = function(){
                     if(!$scope.scanning){
-                        $scope.terminalOutput.push({ content: $scope.terminalInput })
-                        $scope.terminalInput = ""
+                        if($scope.terminalInput.toLowerCase() == "clear"){
+                            $scope.terminalOutput = []
+                            $scope.terminalInput = ''
+                        } else {
+                            $scope.terminalOutput.push({ content: $scope.terminalInput })
+                            $scope.terminalInput = "" 
+                        }
                     } else {
                         $scope.scanning = false
                     }
