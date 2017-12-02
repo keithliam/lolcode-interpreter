@@ -40,8 +40,8 @@
                         $scope.$apply()
                     }
                 }
-                $scope.regexArr = [/\"[^\"]*\"/, /\.\.\./, /OBTW[^(TLDR),]*,?/, /BTW [^,]*,?/, /,/, /HAI/, /KTHXBYE/, /TLDR/, /I HAS A/, /ITZ/, / R /, /SUM OF/, /DIFF OF/, /PRODUKT OF/, /QUOSHUNT OF/, /MOD OF/, /BIGGR OF/, /SMALLR OF/, /BOTH OF/, /EITHER OF/, /WON OF/, /NOT/, /ANY OF/, /ALL OF/, /BOTH SAEM/, /DIFFRINT/, /IZ /, /SMOOSH/, /MAEK/, /IS NOW A/, / A /, /VISIBLE/, /GIMMEH/, /O RLY\?/, /YA RLY/, /MEBBE/, /NO WAI/, /OIC/, /WTF\?/, /OMGWTF/, /OMG/, /IM IN YR/, /UPPIN/, /NERFIN/, / YR /, / TIL /, /WILE/, /IM OUTTA YR/, / AN /, /HOW DUZ I/, / -?\d+\.\d*/, / -?\d+/, /(WIN|FAIL)/, /(YARN|NUMBR|NUMBAR|TROOF|NOOB)/, /MKAY/, /GTFO/, /[a-zA-Z][a-zA-Z0-9_]*/]
-                $scope.regexStrArr = ["String Literal", "Continuation Keyword", "Comment Delimiter", "Comment", "Newline", "Code Delimiter", "Code Delimiter", "Comment Delimiter", "Variable Declaration", "Initial Assignment", "Assignment Keyword", "Sum Operator", "Difference Operator", "Product Operator", "Quotient Operator", "Modulo Operator", "Max Operator", "Min Operator", "And Operator", "Or Operator", "Xor Operator", "Not Operator", "Infinite Arity Or Operator", "Infinite Arity And Operator", "Is Equal Operator", "Is Not Equal Operator", "Comparison Keyword","Concatenation Keyword", "Typecasting Keyword", "Typecasting Keyword", "Assignment Operator", "Output Keyword", "Input Keyword", "If Keyword", "Then Keyword", "If-Else Keyword", "Else Keyword", "Conditional Delimiter", "Switch Case Keyword", "Default Case Keyword", "Case Keyword", "Loop Keyword", "Increment Keyword", "Decrement Keyword", "YR Keyword", "Til Keyword", "Loop Keyword", "Loop Delimiter", "An Keyword", "Function Keyword", "Float Literal", "Int Literal", "Boolean Literal", "Type Literal", "Infinite Arity Delimiter", "Break Keyword", "Variable Identifier"]
+                $scope.regexArr = [/\"[^\"]*\"/, /\.\.\./, /OBTW[^(TLDR),]*,?/, /BTW [^,]*,?/, /,/, /HAI( \d+(\.\d+)?)?/, /KTHXBYE/, /TLDR/, /I HAS A/, /ITZ/, / R /, /SUM OF/, /DIFF OF/, /PRODUKT OF/, /QUOSHUNT OF/, /MOD OF/, /BIGGR OF/, /SMALLR OF/, /BOTH OF/, /EITHER OF/, /WON OF/, /NOT/, /ANY OF/, /ALL OF/, /BOTH SAEM/, /DIFFRINT/, /IZ /, /SMOOSH/, /MAEK/, /IS NOW A/, / A /, /VISIBLE/, /GIMMEH/, /O RLY\?/, /YA RLY/, /MEBBE/, /NO WAI/, /OIC/, /WTF\?/, /OMGWTF/, /OMG/, /IM IN YR/, /UPPIN/, /NERFIN/, / YR /, / TIL /, /WILE/, /IM OUTTA YR/, / AN /, /HOW DUZ I/, / -?\d+\.\d*/, / -?\d+/, /(WIN|FAIL)/, /(YARN|NUMBR|NUMBAR|TROOF|NOOB)/, /MKAY/, /GTFO/, /[a-zA-Z][a-zA-Z0-9_]*/]
+                $scope.regexStrArr = ["String Literal", "Continuation Keyword", "Comment Delimiter", "Comment", "Newline", "Code Delimiter", "Code Delimiter", "Comment Delimiter", "Variable Declaration", "Initial Assignment", "Assignment Keyword", "Sum Operator", "Difference Operator", "Product Operator", "Quotient Operator", "Modulo Operator", "Max Operator", "Min Operator", "And Operator", "Or Operator", "Xor Operator", "Not Operator", "Infinite Arity Or Operator", "Infinite Arity And Operator", "Is Equal Operator", "Is Not Equal Operator", "Comparison Keyword","Concatenation Keyword", "Typecast Operator", "Typecasting Keyword", "Assignment Operator", "Output Keyword", "Input Keyword", "If Keyword", "Then Keyword", "If-Else Keyword", "Else Keyword", "Conditional Delimiter", "Switch Case Keyword", "Default Case Keyword", "Case Keyword", "Loop Keyword", "Increment Keyword", "Decrement Keyword", "YR Keyword", "Til Keyword", "Loop Keyword", "Loop Delimiter", "An Keyword", "Function Keyword", "Float Literal", "Int Literal", "Boolean Literal", "Type Literal", "Infinite Arity Delimiter", "Break Keyword", "Variable Identifier"]
                 $scope.lexemesArray = []
                 $scope.lexemesDisplay = []
                 $scope.isComment = 0
@@ -220,7 +220,7 @@
                         i++
                         lineCtr++
                     }
-                    if(lexemesArray[i].lexeme == "HAI"){
+                    if(lexemesArray[i].classification == "Code Delimiter" && lexemesArray[i].classification != "KTHXBYE"){
                         i++
                         lineCtr++
                         while (lexemesArray[j].classification == "Comment" || lexemesArray[j].classification == "Comment Keyword" || lexemesArray[j].classification == "Comment Delimiter" || lexemesArray[j].classification == "Multiline Comment" || lexemesArray[j].classification == "Newline"){
@@ -395,7 +395,7 @@
                                         opArray.push(line[i])
                                         opCtr--
                                     } else {
-                                        $scope.terminalOutput.push({ content: "Line " + lineNo + ": Syntax Error! Operator must be followed by a numbr, numbar,} or  a variable!"})
+                                        $scope.terminalOutput.push({ content: "Line " + lineNo + ": Syntax Error! Operator must be followed by a numbr, numbar, or  a variable!"})
                                         return false
                                     }
                                 }
@@ -840,6 +840,62 @@
                                 return "error"
                             }
                             ctr++
+                        } else if(array[ctr].classification == "Typecast Operator"){
+                            for(ctr1 = 0; ctr1 < $scope.symbolTable.length; ctr1++){
+                                if(array[ctr + 1].lexeme == $scope.symbolTable[ctr1].identifier){
+                                    var lexemeV
+                                    var classificationV
+                                    if(array[ctr + 3].lexeme == "NUMBR"){
+                                        if(!isNaN($scope.symbolTable[ctr1].value)){
+                                            lexemeV = parseInt($scope.symbolTable[ctr1].value)
+                                            classificationV = 'Int Literal'
+                                            array.splice(ctr, 4, { lexeme: lexemeV, classification: classificationV })
+                                        } else {
+                                            $scope.terminalOutput.push({ content: "Error! Cannot parse NUMBR from " + $scope.symbolTable[ctr1].value })
+                                            return "error"  
+                                        }
+                                    } else if(array[ctr + 3].lexeme == "NUMBAR"){
+                                        if(!isNaN($scope.symbolTable[ctr1].value)){
+                                            lexemeV = parseFloat($scope.symbolTable[ctr1].value)
+                                            classificationV = 'Float Literal'
+                                            array.splice(ctr, 4, { lexeme: lexemeV, classification: classificationV })
+                                        } else {
+                                            $scope.terminalOutput.push({ content: "Error! Cannot parse NUMBAR from " + $scope.symbolTable[ctr1].value })
+                                            return "error"  
+                                        }
+                                    } else if(array[ctr + 3].lexeme == "YARN"){
+                                        lexemeV = $scope.symbolTable[ctr1].value.toString()
+                                        classificationV = "String Literal"
+                                        if(!isNaN(lexemeV)){
+                                            array.splice(ctr, 4, { lexeme: lexemeV, classification: classificationV })
+                                        } else {
+                                            $scope.terminalOutput.push({ content: "Error! \"" + $scope.symbolTable[ctr1].value + "\" is not an integer nor a float" })
+                                            return "error" 
+                                        }
+                                    } else if(array[ctr + 3].lexeme == "TROOF"){
+                                        if($scope.symbolTable[ctr1].value == "WIN" || $scope.symbolTable[ctr1].value == "FAIL"){
+                                            $scope.terminalOutput.push({ content: "Error! \"" + $scope.symbolTable[ctr1].value + "\" is not an integer nor a float" })
+                                            return "error" 
+                                        } else {
+                                            $scope.terminalOutput.push({ content: "Error! Cannot parse TROOF from " + $scope.symbolTable[ctr1].value })
+                                            return "error" 
+                                        }
+                                    } else {
+                                        $scope.terminalOutput.push({ content: "Error! \"" + $scope.symbolTable[ctr1].value + "\" is not an integer nor a float" })
+                                        return "error" 
+                                    }
+                                    break
+                                }
+                                if(ctr1 == $scope.symbolTable - 1 && array[ctr + 1].lexeme != $scope.symbolTable[ctr1].identifier){
+                                    $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + array[ctr].lexeme + "\"" })
+                                    return "error"
+                                }
+                            }
+                            if($scope.symbolTable.length == 0){
+                                $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + array[ctr].lexeme + "\"" })
+                                return "error"
+                            }
+                            ctr++
                         } else if(array[ctr].classification == "An Keyword" || array[ctr].classification == "String Delimiter"){
                             array.splice(ctr, 1)
                         } else if(array[ctr].classification == "String Literal" && isNaN(array[ctr].lexeme)){
@@ -916,6 +972,59 @@
                                 $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + array[ctr].lexeme + "\""})
                             }
                             ctr++
+                        } else if(array[ctr].classification == "Typecast Operator"){
+                            for(ctr1 = 0; ctr1 < $scope.symbolTable.length; ctr1++){
+                                if(array[ctr + 1].lexeme == $scope.symbolTable[ctr1].identifier){
+                                    var lexemeV
+                                    var classificationV
+                                    if(array[ctr + 3].lexeme == "NUMBR"){
+                                        if(!isNaN($scope.symbolTable[ctr1].value)){
+                                            lexemeV = parseInt($scope.symbolTable[ctr1].value)
+                                            classificationV = 'Int Literal'
+                                            array.splice(ctr, 4, { lexeme: lexemeV, classification: classificationV })
+                                        } else {
+                                            $scope.terminalOutput.push({ content: "Error! Cannot parse NUMBR from " + $scope.symbolTable[ctr1].value })
+                                            return "error"  
+                                        }
+                                    } else if(array[ctr + 3].lexeme == "NUMBAR"){
+                                        if(!isNaN($scope.symbolTable[ctr1].value)){
+                                            lexemeV = parseFloat($scope.symbolTable[ctr1].value)
+                                            classificationV = 'Float Literal'
+                                            array.splice(ctr, 4, { lexeme: lexemeV, classification: classificationV })
+                                        } else {
+                                            $scope.terminalOutput.push({ content: "Error! Cannot parse NUMBAR from " + $scope.symbolTable[ctr1].value })
+                                            return "error"  
+                                        }
+                                    } else if(array[ctr + 3].lexeme == "YARN"){
+                                        lexemeV = $scope.symbolTable[ctr1].value.toString()
+                                        classificationV = "String Literal"
+                                        array.splice(ctr, 4, { lexeme: lexemeV, classification: classificationV })
+                                    } else if(array[ctr + 3].lexeme == "TROOF"){
+                                        if($scope.symbolTable[ctr1].value == "WIN" || $scope.symbolTable[ctr1].value == "FAIL"){
+                                            lexemeV = $scope.symbolTable[ctr1].value
+                                            classificationV = "Boolean Literal"
+                                            array.splice(ctr, 4, { lexeme: lexemeV, classification: classificationV })
+                                        } else {
+                                            $scope.terminalOutput.push({ content: "Error! Cannot parse TROOF from " + $scope.symbolTable[ctr1].value })
+                                            return "error" 
+                                        }
+                                    } else {
+                                        lexemeV = ''
+                                        classificationV = 'NOOB'
+                                        array.splice(ctr, 4, { lexeme: lexemeV, classification: classificationV })
+                                    }
+                                    break
+                                }
+                                if(ctr1 == $scope.symbolTable - 1 && array[ctr + 1].lexeme != $scope.symbolTable[ctr1].identifier){
+                                    $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + array[ctr].lexeme + "\"" })
+                                    return "error"
+                                }
+                            }
+                            if($scope.symbolTable.length == 0){
+                                $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + array[ctr].lexeme + "\"" })
+                                return "error"
+                            }
+                            ctr++
                         } else if(array[ctr].classification == "String Delimiter" && array[ctr + 1].classification == "String Literal" && array[ctr + 2].classification == "String Delimiter"){
                             array.splice(ctr + 2, 1)
                             array.splice(ctr, 1)
@@ -953,6 +1062,10 @@
                             parseFloat(array[ctr].lexeme) % 1 == 0? array[ctr].classification = "Int Literal" : array[ctr].classification = "Float Literal"
                         }
                         if(ctr >= 1 && array[ctr - 1].classification == "Not Operator" && (array[ctr].classification == "Boolean Literal" || array[ctr].classification == "String Literal")){
+                            if(array[ctr - 1].lexeme != "WIN" && array[ctr - 1].lexeme != "FAIL"){
+                                $scope.terminalOutput.push({ content: "Error in parsing boolean" })
+                                return "error"
+                            }
                             array.splice(ctr - 1, 2, { lexeme: array[ctr].lexeme == "WIN"? "FAIL" : "WIN", classification:     "Boolean Literal" })
                         } else if(     ctr >= 2
                             &&
@@ -983,12 +1096,19 @@
                             &&
                                 (array[ctr].classification == "Boolean Literal" || array[ctr].classification == "String Literal")
                             &&
-                                (array[ctr - 1].classification == "Boolean Literal" || array[ctr].classification == "String Literal")
+                                (array[ctr - 1].classification == "Boolean Literal" || array[ctr - 1].classification == "String Literal")
                             &&
                                 (array[ctr - 2].classification == "And Operator" ||
                                 array[ctr - 2].classification == "Or Operator" ||
                                 array[ctr - 2].classification == "Xor Operator")
                             ){
+                            if(array[ctr].lexeme != "WIN" && array[ctr].lexeme != "FAIL"){
+                                $scope.terminalOutput.push({ content: "Error! \"" + array[ctr].lexeme + "\" is not boolean" })
+                                return "error"
+                            } else if(array[ctr - 1].lexeme != "WIN" && array[ctr - 1].lexeme != "FAIL"){
+                                $scope.terminalOutput.push({ content: "Error! \"" + array[ctr - 1].lexeme + "\" is not boolean" })
+                                return "error"
+                            }
                             if(array[ctr - 2].classification == "And Operator"){
                                 if(array[ctr - 1].lexeme == "WIN" && array[ctr].lexeme == "WIN"){
                                     array.splice(ctr - 2, 3, { lexeme: "WIN", classification: "Boolean Literal" })
@@ -1063,6 +1183,7 @@
                     var value1
                     var condCtr = 0
                     for(ctr = 0; ctr < array.length; ctr++){
+                        console.log(array[ctr].classification)
                         if(array[ctr].classification == "If Keyword") {
                             condCtr++
                             ctr += 3
@@ -1113,7 +1234,7 @@
                             }
                             ctr++
                         } else if(array[ctr].classification == "Switch Case Keyword"){
-                            while (!(array[ctr].classification == "Case Keyword" && ($scope.symbolTable[$scope.symbolTable.length-1].value == array[ctr+1].lexeme || ($scope.symbolTable[$scope.symbolTable.length-1].type == "String Literal" && $scope.symbolTable[$scope.symbolTable.length-1].value == array[ctr+2].lexeme))) && array[ctr - 1].classification != "Default Case Keyword"){
+                            while (!(array[ctr - 2].classification == "Case Keyword" && ($scope.symbolTable[$scope.symbolTable.length - 1].value == array[ctr - 1].lexeme || ($scope.symbolTable[$scope.symbolTable.length - 1].type == "String Literal" && $scope.symbolTable[$scope.symbolTable.length - 1].value == array[ctr].lexeme))) && array[ctr - 1].classification != "Default Case Keyword"){
                                 ctr++
                             }
                             accArray = []
@@ -1205,7 +1326,146 @@
                                       }
                                     }
                                   }
-                              } else if(accArray[0].classification == "Variable Identifier"){
+                              } else if(accArray[0].classification == "Typecast Operator"){
+                                    for(ctr1 = 0; ctr1 < $scope.symbolTable.length; ctr1++){
+                                        if(accArray[1].lexeme == $scope.symbolTable[ctr1].identifier){
+                                            var lexemeV
+                                            var classificationV
+                                            if(accArray[3].lexeme == "NUMBR"){
+                                                if(!isNaN($scope.symbolTable[ctr1].value)){
+                                                    for(ctr3 = 0; ctr3 < $scope.symbolTable.length; ctr3++){
+                                                        if(array[ctr + 1].lexeme == $scope.symbolTable[ctr3].identifier){
+                                                            $scope.symbolTable[ctr3].value = parseInt($scope.symbolTable[ctr1].value)
+                                                            $scope.symbolTable[ctr3].type = 'Int Literal'
+                                                            break
+                                                        }
+                                                        if(ctr3 == $scope.symbolTable.length - 1 && array[ctr + 1].lexeme != $scope.symbolTable[ctr3].identifier){
+                                                            $scope.symbolTable.push({
+                                                                identifier:     array[ctr + 1].lexeme,
+                                                                value:          parseInt($scope.symbolTable[ctr1].value),
+                                                                type:           'Int Literal'
+                                                            })
+                                                        }
+                                                    }
+                                                    if($scope.symbolTable.length == 0){
+                                                        $scope.symbolTable.push({
+                                                            identifier:     array[ctr + 1].lexeme,
+                                                            value:          parseInt($scope.symbolTable[ctr1].value),
+                                                            type:           'Int Literal'
+                                                        })
+                                                    }
+                                                } else {
+                                                    $scope.terminalOutput.push({ content: "Error! Cannot parse NUMBR from " + $scope.symbolTable[ctr1].value })
+                                                    return "error"  
+                                                }
+                                            } else if(accArray[3].lexeme == "NUMBAR"){
+                                                if(!isNaN($scope.symbolTable[ctr1].value)){
+                                                    for(ctr3 = 0; ctr3 < $scope.symbolTable.length; ctr3++){
+                                                        if(array[ctr + 1].lexeme == $scope.symbolTable[ctr3].identifier){
+                                                            $scope.symbolTable[ctr3].value = parseFloat($scope.symbolTable[ctr1].value)
+                                                            $scope.symbolTable[ctr3].type = 'Float Literal'
+                                                            break
+                                                        }
+                                                        if(ctr3 == $scope.symbolTable.length - 1 && array[ctr + 1].lexeme != $scope.symbolTable[ctr3].identifier){
+                                                            $scope.symbolTable.push({
+                                                                identifier:     array[ctr + 1].lexeme,
+                                                                value:          parseFloat($scope.symbolTable[ctr1].value),
+                                                                type:           'Float Literal'
+                                                            })
+                                                        }
+                                                    }
+                                                    if($scope.symbolTable.length == 0){
+                                                        $scope.symbolTable.push({
+                                                            identifier:     array[ctr + 1].lexeme,
+                                                            value:          parseFloat($scope.symbolTable[ctr1].value),
+                                                            type:           'Float Literal'
+                                                        })
+                                                    }
+                                                } else {
+                                                    $scope.terminalOutput.push({ content: "Error! Cannot parse NUMBAR from " + $scope.symbolTable[ctr1].value })
+                                                    return "error"  
+                                                }
+                                            } else if(accArray[3].lexeme == "YARN"){
+                                                for(ctr3 = 0; ctr3 < $scope.symbolTable.length; ctr3++){
+                                                    if(array[ctr + 1].lexeme == $scope.symbolTable[ctr3].identifier){
+                                                        $scope.symbolTable[ctr3].value = $scope.symbolTable[ctr1].value.toString()
+                                                        $scope.symbolTable[ctr3].type = 'String Literal'
+                                                        break
+                                                    }
+                                                    if(ctr3 == $scope.symbolTable.length - 1 && array[ctr + 1].lexeme != $scope.symbolTable[ctr3].identifier){
+                                                        $scope.symbolTable.push({
+                                                            identifier:     array[ctr + 1].lexeme,
+                                                            value:          $scope.symbolTable[ctr1].value.toString(),
+                                                            type:           'String Literal'
+                                                        })
+                                                    }
+                                                }
+                                                if($scope.symbolTable.length == 0){
+                                                    $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + array[ctr + 1].lexeme + "\""})
+                                                    return "error"
+                                                }
+                                            } else if(accArray[3].lexeme == "TROOF"){
+                                                if($scope.symbolTable[ctr1].value == "WIN" || $scope.symbolTable[ctr1].value == "FAIL"){
+                                                    for(ctr3 = 0; ctr3 < $scope.symbolTable.length; ctr3++){
+                                                        if(array[ctr + 1].lexeme == $scope.symbolTable[ctr3].identifier){
+                                                            $scope.symbolTable[ctr3].value = $scope.symbolTable[ctr1].value
+                                                            $scope.symbolTable[ctr3].type = 'Boolean Literal'
+                                                            break
+                                                        }
+                                                        if(ctr3 == $scope.symbolTable.length - 1 && array[ctr + 1].lexeme != $scope.symbolTable[ctr3].identifier){
+                                                            $scope.symbolTable.push({
+                                                                identifier:     array[ctr + 1].lexeme,
+                                                                value:          $scope.symbolTable[ctr1].value,
+                                                                type:           'Boolean Literal'
+                                                            })
+                                                        }
+                                                    }
+                                                    if($scope.symbolTable.length == 0){
+                                                        $scope.symbolTable.push({
+                                                            identifier:     array[ctr + 1].lexeme,
+                                                            value:          $scope.symbolTable[ctr1].value,
+                                                            type:           'Boolean Literal'
+                                                        })
+                                                    }
+                                                } else {
+                                                    $scope.terminalOutput.push({ content: "Error! Cannot parse TROOF from " + $scope.symbolTable[ctr1].value })
+                                                    return "error" 
+                                                }
+                                            } else {
+                                                for(ctr3 = 0; ctr3 < $scope.symbolTable.length; ctr3++){
+                                                    if(array[ctr + 1].lexeme == $scope.symbolTable[ctr3].identifier){
+                                                        $scope.symbolTable[ctr3].value = ''
+                                                        $scope.symbolTable[ctr3].type = 'NOOB'
+                                                        break
+                                                    }
+                                                    if(ctr3 == $scope.symbolTable.length - 1 && array[ctr + 1].lexeme != $scope.symbolTable[ctr3].identifier){
+                                                        $scope.symbolTable.push({
+                                                            identifier:     array[ctr + 1].lexeme,
+                                                            value:          '',
+                                                            type:           'NOOB'
+                                                        })
+                                                    }
+                                                }
+                                                if($scope.symbolTable.length == 0){
+                                                    $scope.symbolTable.push({
+                                                        identifier:     array[ctr + 1].lexeme,
+                                                        value:          '',
+                                                        type:           'NOOB'
+                                                    })
+                                                }
+                                            }
+                                            break
+                                        }
+                                        if(ctr1 == $scope.symbolTable - 1 && accArray[1].lexeme != $scope.symbolTable[ctr1].identifier){
+                                            $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + accArray[0].lexeme + "\"" })
+                                            return "error"
+                                        }
+                                    }
+                                    if($scope.symbolTable.length == 0){
+                                        $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + accArray[0].lexeme + "\"" })
+                                        return "error"
+                                    }
+                                } else if(accArray[0].classification == "Variable Identifier"){
                                   for(ctr1 = 0; ctr1 < $scope.symbolTable.length; ctr1++){
                                       if(accArray[0].lexeme == $scope.symbolTable[ctr1].identifier){
                                           for(ctr3 = 0; ctr3 < $scope.symbolTable.length; ctr3++){
@@ -1479,6 +1739,66 @@
                                 }
                           }
                           ctr = ctr + 2
+                        } else if(ctr > 0 && array[ctr - 1].classification == "Newline" && array[ctr].classification == "Typecast Operator" && array[ctr + 4].classification == "Newline"){
+                            for(ctr1 = 0; ctr1 < $scope.symbolTable.length; ctr1++){
+                                if(array[ctr + 1].lexeme == $scope.symbolTable[ctr1].identifier){
+                                    if(array[ctr + 3].lexeme == "NUMBR"){
+                                        if(!isNaN($scope.symbolTable[ctr1].value)){
+                                            $scope.symbolTable.push({
+                                                identifier:     'IT',
+                                                value:          parseInt($scope.symbolTable[ctr1].value),
+                                                type:           'Int Literal'
+                                            })
+                                        } else {
+                                            $scope.terminalOutput.push({ content: "Error! Cannot parse NUMBR from " + $scope.symbolTable[ctr1].value })
+                                            return "error"  
+                                        }
+                                    } else if(array[ctr + 3].lexeme == "NUMBAR"){
+                                        if(!isNaN($scope.symbolTable[ctr1].value)){
+                                            $scope.symbolTable.push({
+                                                identifier:     'IT',
+                                                value:          parseFloat($scope.symbolTable[ctr1].value),
+                                                type:           'Float Literal'
+                                            })
+                                        } else {
+                                            $scope.terminalOutput.push({ content: "Error! Cannot parse NUMBAR from " + $scope.symbolTable[ctr1].value })
+                                            return "error"  
+                                        }
+                                    } else if(array[ctr + 3].lexeme == "YARN"){
+                                        $scope.symbolTable.push({
+                                            identifier:     'IT',
+                                            value:          $scope.symbolTable[ctr1].value.toString(),
+                                            type:           'String Literal'
+                                        })
+                                    } else if(array[ctr + 3].lexeme == "TROOF"){
+                                        if($scope.symbolTable[ctr1].value == "WIN" || $scope.symbolTable[ctr1].value == "FAIL"){
+                                            $scope.symbolTable.push({
+                                                identifier:     'IT',
+                                                value:          $scope.symbolTable[ctr1].value,
+                                                type:           'Boolean Literal'
+                                            })
+                                        } else {
+                                            $scope.terminalOutput.push({ content: "Error! Cannot parse TROOF from " + $scope.symbolTable[ctr1].value })
+                                            return "error" 
+                                        }
+                                    } else {
+                                        $scope.symbolTable.push({
+                                            identifier:        'IT',
+                                            value:              '',
+                                            type:               'NOOB'
+                                        })
+                                    }
+                                    break
+                                }
+                                if(ctr1 == $scope.symbolTable - 1 && array[ctr + 1].lexeme != $scope.symbolTable[ctr1].identifier){
+                                    $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + array[ctr].lexeme + "\"" })
+                                    return "error"
+                                }
+                            }
+                            if($scope.symbolTable.length == 0){
+                                $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + array[ctr].lexeme + "\"" })
+                                return "error"
+                            }
                         } else if(ctr > 0 && array[ctr - 1].classification == "Newline" &&
                             (array[ctr].classification == "Boolean Literal" || array[ctr].classification == "Variable Identifier") &&
                             array[ctr + 1].classification == "Newline"){
@@ -1552,6 +1872,7 @@
                           }
                           accArray = []
                         } else if(array[ctr].classification == "Output Keyword"){
+                            console.log("dklsfj")
                           var visibleStr = ""
                           var opCtr = 0
                           var opArr = []
@@ -1638,12 +1959,51 @@
                                           }
                                       }
                                   }
+                              } else if(accArray[ctr1].classification == "Typecast Operator"){
+                                for(ctr3 = 0; ctr3 < $scope.symbolTable.length; ctr3++){
+                                    if(accArray[ctr1 + 1].lexeme == $scope.symbolTable[ctr3].identifier){
+                                        if(accArray[ctr1 + 3].lexeme == "NUMBR"){
+                                            if(!isNaN($scope.symbolTable[ctr3].value)){
+                                                visibleStr = visibleStr + parseInt($scope.symbolTable[ctr3].value).toString()
+                                            } else {
+                                                $scope.terminalOutput.push({ content: "Error! Cannot parse NUMBR from " + $scope.symbolTable[ctr3].value })
+                                                return "error"  
+                                            }
+                                        } else if(accArray[ctr1 + 3].lexeme == "NUMBAR"){
+                                            if(!isNaN($scope.symbolTable[ctr3].value)){
+                                                visibleStr = visibleStr + parseFloat($scope.symbolTable[ctr3].value).toString()
+                                            } else {
+                                                $scope.terminalOutput.push({ content: "Error! Cannot parse NUMBAR from " + $scope.symbolTable[ctr3].value })
+                                                return "error"  
+                                            }
+                                        } else if(accArray[ctr1 + 3].lexeme == "YARN"){
+                                            visibleStr = visibleStr + $scope.symbolTable[ctr3].value.toString()
+                                        } else if(accArray[ctr1 + 3].lexeme == "TROOF"){
+                                            if($scope.symbolTable[ctr3].value == "WIN" || $scope.symbolTable[ctr3].value == "FAIL"){
+                                                visibleStr = visibleStr + $scope.symbolTable[ctr3].value
+                                            } else {
+                                                $scope.terminalOutput.push({ content: "Error! Cannot parse TROOF from " + $scope.symbolTable[ctr3].value })
+                                                return "error" 
+                                            }
+                                        }
+                                        break
+                                    }
+                                    if(ctr3 == $scope.symbolTable - 1 && accArray[ctr1 + 1].lexeme != $scope.symbolTable[ctr3].identifier){
+                                        $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + accArray[ctr1].lexeme + "\"" })
+                                        return "error"
+                                    }
+                                }
+                                if($scope.symbolTable.length == 0){
+                                    $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + accArray[ctr1].lexeme + "\"" })
+                                    return "error"
+                                }
                               } else if(accArray[ctr1].lexeme == "AN"){
                                   if(opCtr > 0){
                                       opArr.push(accArray[ctr1])
                                       opCtr--
                                   }
                               }
+                              ctr1 += 4
                           }
                           accArray = []
                           $scope.symbolTable.push({
@@ -1689,6 +2049,50 @@
                                 }
                             })
                             break
+                        } else if(array[ctr].classification == "Typecasting Keyword"){
+                            for(ctr1 = 0; ctr1 < $scope.symbolTable.length; ctr1++){
+                                if(array[ctr - 1].lexeme == $scope.symbolTable[ctr1].identifier){
+                                    if(array[ctr + 1].lexeme == "NUMBR"){
+                                        if(!isNaN($scope.symbolTable[ctr1].value)){
+                                            $scope.symbolTable[ctr1].value = parseInt($scope.symbolTable[ctr1].value)
+                                            $scope.symbolTable[ctr1].type = 'Int Literal'
+                                        } else {
+                                            $scope.terminalOutput.push({ content: "Error! Cannot parse NUMBR from " + $scope.symbolTable[ctr1].value })
+                                            return "error"  
+                                        }
+                                    } else if(array[ctr + 1].lexeme == "NUMBAR"){
+                                        if(!isNaN($scope.symbolTable[ctr1].value)){
+                                            $scope.symbolTable[ctr1].value = parseFloat($scope.symbolTable[ctr1].value)
+                                            $scope.symbolTable[ctr1].type = 'Float Literal'
+                                        } else {
+                                            $scope.terminalOutput.push({ content: "Error! Cannot parse NUMBAR from " + $scope.symbolTable[ctr1].value })
+                                            return "error"  
+                                        }
+                                    } else if(array[ctr + 1].lexeme == "YARN"){
+                                        $scope.symbolTable[ctr1].value = $scope.symbolTable[ctr1].value.toString()
+                                        $scope.symbolTable[ctr1].type = "String Literal"
+                                    } else if(array[ctr + 1].lexeme == "TROOF"){
+                                        if($scope.symbolTable[ctr1].value == "WIN" || $scope.symbolTable[ctr1].value == "FAIL"){
+                                            $scope.symbolTable[ctr1].type = "Boolean Literal"
+                                        } else {
+                                            $scope.terminalOutput.push({ content: "Error! Cannot parse TROOF from " + $scope.symbolTable[ctr1].value })
+                                            return "error" 
+                                        }
+                                    } else {
+                                        $scope.symbolTable[ctr1].value = ''
+                                        $scope.symbolTable[ctr1].type = 'NOOB'
+                                    }
+                                    break
+                                }
+                                if(ctr1 == $scope.symbolTable.length - 1 && array[ctr - 1].lexeme != $scope.symbolTable[ctr1].identifier){
+                                    $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + array[ctr - 1].lexeme + "\"" })
+                                    return "error"  
+                                }
+                            }
+                            if($scope.symbolTable.length == 0){
+                                $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + array[ctr - 1].lexeme + "\"" })
+                                return "error"
+                            }
                         }
                   }
                 }
@@ -1725,9 +2129,9 @@
                             ctr--
                         }
                     }
-                    if($scope.parser($scope.lexemesArray) != "error"){
+                    // if($scope.parser($scope.lexemesArray) != "error"){
                         $scope.semanticAnalyzer(JSON.parse(JSON.stringify($scope.lexemesArray)))
-                    }
+                    // }
                 }
                 $scope.fileName = "Upload Code"
                 $scope.uploaded = function(){
