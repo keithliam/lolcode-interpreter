@@ -930,30 +930,19 @@
                     return parseFloat(array[0].lexeme)
                 }
                 $scope.getCondValue = function(array1, symbolTable){
-                    // console.log(array1)
-                    // return "error"
-                    // console.log("----------<><><><><><>-----------")
-                    // console.log(array1)
-                    // console.log("----------<><><><><><>-----------")
                     var array = array1.slice()
                     var ctr = 0
                     var ctr1
-                    // console.log(array)
-                    // console.log("----------<><><><><><>-----------")
                     while(ctr < array.length){
                         if(array[ctr].classification == "Variable Identifier"){
                             if(symbolTable.length != 0){
                                 for(ctr1 = 0; ctr1 < symbolTable.length; ctr1++){
-                                    // console.log("kdfhjsklahdgjklshad-------------+++++++++++")
-                                    // console.log($scope.symbolTable[ctr1].type)
                                     if(array[ctr].lexeme == symbolTable[ctr1].identifier){
                                         if($scope.symbolTable[ctr1].type == "NOOB" || $scope.symbolTable.value == ""){
                                             $scope.terminalOutput.push({ content: "Error! Variable \"" + array[ctr].lexeme + "\" has no value"})
                                             return "error"
                                         } else {
                                             array[ctr].lexeme = symbolTable[ctr1].value
-                                            // console.log(array)
-                                            // return "error"
                                             array[ctr].classification = symbolTable[ctr1].type
                                             break
                                         }
@@ -973,18 +962,14 @@
                         } else if(array[ctr].classification == "An Keyword" || array[ctr].classification == "String Delimiter"){
                             array.splice(ctr, 1)
                         } else {
-                            // console.log(array)
                             ctr++
                         }
                     }
-                    // console.log(array)
-                    // return "error"
                     ctr = 0
                     var result
                     var object1
                     var infiniteIndex = -1
                     while(ctr < array.length){
-                        // console.log(array)
                         if(array[ctr].classification == "Sum Operator" ||
                             array[ctr].classification == "Difference Operator" ||
                             array[ctr].classification == "Product Operator" ||
@@ -995,40 +980,20 @@
                             var operands = 2    // noOfOperators == noOfLiterals - 1
                             var expressionArray = []
                             expressionArray.push(array[ctr])
-                            // console.log(expressionArray[0])
-                            // console.log("?????????/")
-                            // console.log(expressionArray)
                             while(operands != 0){
-                                // console.log(array[ctr + 1].lexeme)
                                 expressionArray.push(array[ctr + 1])
-                                // console.log(array[ctr + 1])
-                                array.splice(ctr + 1, 1)
-                                // console.log(array[ctr + 1])
                                 if(array[ctr + 1].classification == "Int Literal" || array[ctr + 1].classification == "Float Literal" || array[ctr + 1].classification == "String Literal"){
                                     operands--
                                 } else {
                                     operands++
                                 }
+                                array.splice(ctr + 1, 1)
                             }
-                            // console.log(expressionArray)
-                            // console.log("------------> 2 + 4.3 = " + $scope.getExprValue(expressionArray, $scope.symbolTable))
-                            // console.log(array[ctr])
                             array[ctr].lexeme = $scope.getExprValue(expressionArray, $scope.symbolTable)
-                            // console.log("-------> " + array[ctr].lexeme)
                             parseFloat(array[ctr].lexeme) % 1 == 0? array[ctr].classification = "Int Literal" : array[ctr].classification = "Float Literal"
-                            // console.log(array[ctr].classification)
                         }
-                        // console.log(ctr)
-                        // console.log(array)
-                        // console.log("---------><--------------")
                         if(ctr >= 1 && array[ctr - 1].classification == "Not Operator" && (array[ctr].classification == "Boolean Literal" || array[ctr].classification == "String Literal")){
                             array.splice(ctr - 1, 2, { lexeme: array[ctr].lexeme == "WIN"? "FAIL" : "WIN", classification:     "Boolean Literal" })
-                            // array.splice(ctr - 1, 2, object1)
-                            ctr--
-                            // console.log(array)
-                            // console.log("-------------<><><>--------------")
-                            // return "error"
-
                         } else if(     ctr >= 2
                             &&
                                 (array[ctr].classification == "Boolean Literal" ||
@@ -1044,8 +1009,6 @@
                                 (array[ctr - 2].classification == "Is Equal Operator" ||
                                 array[ctr - 2].classification == "Is Not Equal Operator")
                         ){
-                            // console.log("IM IN")
-                            // console.log(array)
                             if((array[ctr].classification != "String Literal" || array[ctr - 1].classification != "String Literal") && array[ctr].classification != array[ctr - 1].classification){
                                 array[ctr - 2].classification == "Is Equal Operator"? array.splice(ctr - 2, 3, { lexeme: "FAIL", classification: "Boolean Literal" }) : array.splice(ctr - 2, 3, { lexeme: "WIN", classification: "Boolean Literal" })
                             } else {
@@ -1079,34 +1042,23 @@
                                     array.splice(ctr - 2, 3, { lexeme: "FAIL", classification: "Boolean Literal" })
                                 }
                             } else {
-                                // console.log("------> " + array[ctr - 1].lexeme + ", " + array[ctr].lexeme)
                                 if((array[ctr - 1].lexeme == "WIN" && array[ctr].lexeme == "FAIL") ||
                                     (array[ctr - 1].lexeme == "FAIL" && array[ctr].lexeme == "WIN")){
-                                    // console.log("WIN!!!!!!!!!!")
                                     array.splice(ctr - 2, 3, { lexeme: "WIN", classification: "Boolean Literal" })
                                 } else {
                                     array.splice(ctr - 2, 3, { lexeme: "FAIL", classification: "Boolean Literal" })
                                 }
                             }
-                            // console.log(result)
                             ctr = ctr - 2
                         } else {
-                            // console.log(array[ctr].classification)
                             if((array[ctr].classification == "Infinite Arity And Operator" || array[ctr].classification == "Infinite Arity Or Operator")){
-                                // console.log("djshafl")
                                 infiniteIndex = ctr
-                                // console.log("infiniteIndex: " + infiniteIndex)
                                 ctr++
                             } else if(array[ctr].classification == "Infinite Arity Delimiter"){
-                                // console.log("-----> ")
-                                // console.log(infiniteIndex)
                                 for(ctr1 = ctr - 1; ctr1 > infiniteIndex; ctr1--){
-                                    // console.log("ooops" + infiniteIndex)
                                     if(array[infiniteIndex].classification == "Infinite Arity And Operator"){
                                         if(array[ctr1].lexeme == "FAIL"){
-                                            // console.log(ctr1 + " " + infiniteIndex + " " + (ctr1 - infiniteIndex + 2))
                                             array.splice(infiniteIndex, ctr - infiniteIndex + 1, { lexeme: "FAIL", classification: "Boolean Literal" })
-                                            // console.log(array)
                                             break
                                         }
                                         if(ctr1 == infiniteIndex + 1 && array[ctr1].lexeme == "WIN"){
@@ -1114,7 +1066,6 @@
                                         }
                                     } else {
                                         if(array[ctr1].lexeme == "WIN"){
-                                            // console.log("toDelete: " + (ctr - infiniteIndex + 1))
                                             array.splice(infiniteIndex, ctr - infiniteIndex + 1, { lexeme: "WIN", classification: "Boolean Literal" })
                                             break
                                         }
@@ -1122,18 +1073,13 @@
                                             array.splice(infiniteIndex, ctr - infiniteIndex + 1, { lexeme: "FAIL", classification: "Boolean Literal" })
                                         }
                                     }
-                                    // console.log(array)
                                 }
                                 ctr = infiniteIndex
                                 infiniteIndex = -1
-                                // console.log("ctr: " + ctr)
-                                // console.log(array[ctr].lexeme)
                             } else {
                                 ctr++
                             }
                         }
-                        // console.log(array)
-                        // return "error"
                     }
                     return array[0].lexeme
                 }
@@ -1164,6 +1110,7 @@
                 $scope.symbolTable = []
                 $scope.semanticAnalyzer = function(array){
                     // console.log(array)
+                    // return "error"
 
                     var ctr
                     var ctr1 = 0
@@ -1669,10 +1616,16 @@
                           // console.log("jkshakljfhd")
                           // console.log(accArray)
                           // return "error"
+                          // console.log(accArray)
+                          // console.log(accArray[0])
+                          // return "error"
                           if(accArray[0].classification == "Sum Operator" || accArray[0].classification == "Difference Operator" || accArray[0].classification == "Quotient Operator" || accArray[0].classification == "Product Operator" || accArray[0].classification == "Modulo Operator" || accArray[0].classification == "Min Operator" || accArray[0].classification == "Max Operator"){
                             value1 = $scope.getExprValue(accArray, $scope.symbolTable)
+                            // console.log("EXPR!!")
                             // console.log(value1)
+                            // return "error"
                           } else {
+                            console.log("COND!!")
                             value1 = $scope.getCondValue(accArray, $scope.symbolTable)
                           }
                           if(value1 != "error"){
@@ -1873,7 +1826,7 @@
                             lexeme: "\\n",
                             classification: "Newline"
                         })
-                        // console.log(ctr)
+                        // console.log(lexe)
                     }
                     // console.log($scope.lexemesArray)
                     // return "error"
@@ -1892,14 +1845,14 @@
                             ctr--
                         }
                     }
+                    if($scope.parser($scope.lexemesArray) != "error"){
+                        $scope.semanticAnalyzer($scope.lexemesArray)
+                    }
                     // console.log("----------- lexemes array ------------")
                     // console.log($scope.lexemesArray)
                     // console.log($scope.lexemesDisplay)
                     // console.log("-------------------------------")
                     // return "error"
-                    if($scope.parser($scope.lexemesArray) != "error"){
-                        $scope.semanticAnalyzer($scope.lexemesArray)
-                    }
                 }
                 $scope.fileName = "Upload Code"
                 $scope.uploaded = function(){
