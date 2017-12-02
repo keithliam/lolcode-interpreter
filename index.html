@@ -842,7 +842,7 @@
                 $scope.getExprValue = function(array1, symbolTable){
 
                     // console.log("-----------------")
-                    // console.log(array1)
+                    console.log(array1)
                     var array = array1.slice()
                     var ctr = 0
                     var ctr1
@@ -1523,6 +1523,7 @@
                                           for(ctr3 = 0; ctr3 < $scope.symbolTable.length; ctr3++){
                                               if(array[ctr + 1].lexeme == $scope.symbolTable[ctr3].identifier){
                                                   $scope.symbolTable[ctr3].value = value1
+                                                  $scope.symbolTable[ctr3].type = parseFloat(value1) % 1 == 0? "Int Literal" : "Float Literal"
                                                   break
                                               }
                                               if(ctr3 == $scope.symbolTable.length - 1){
