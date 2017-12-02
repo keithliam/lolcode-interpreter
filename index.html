@@ -1233,7 +1233,10 @@
                         } else if (array[ctr].classification == "Switch Case Keyword") {
                             // // console.log($scope.symbolTable[$scope.symbolTable.length-1].type)
                             // console.log($scope.symbolTable[$scope.symbolTable.length-1].value + " == " + array[ctr+4].lexeme)
-                            while ((array[ctr].classification != "Case Keyword" && $scope.symbolTable[$scope.symbolTable.length-1].value != array[ctr+1].lexeme) && array[ctr].classification != "Default Case Keyword") {
+                            while (!(array[ctr].classification == "Case Keyword" && ($scope.symbolTable[$scope.symbolTable.length-1].value == array[ctr+1].lexeme || ($scope.symbolTable[$scope.symbolTable.length-1].type == "String Literal" && $scope.symbolTable[$scope.symbolTable.length-1].value == array[ctr+2].lexeme))) && array[ctr].classification != "Default Case Keyword"){
+                                // console.log($scope.symbolTable[$scope.symbolTable.length-1].type + " == " + array[ctr+2].lexeme)
+                                ctr++
+                            }
                             // console.log()
                             accArray = []
                             while( !(condCtr == 0 && array[ctr].classification == "Conditional Delimiter")) {
