@@ -809,20 +809,20 @@
                         }
                     }
                 }
-                $scope.getExprValue = function(array1, symbolTable){
+                $scope.getExprValue = function(array1){
                     var array = array1.slice()
                     var ctr = 0
                     var ctr1
                     while(ctr < array.length){
                         if(array[ctr].classification == "Variable Identifier"){
                             if($scope.symbolTable.length != 0){
-                                for(ctr1 = 0; ctr1 < symbolTable.length; ctr1++){
-                                    if(array[ctr].lexeme == symbolTable[ctr1].identifier){
+                                for(ctr1 = 0; ctr1 < $scope.symbolTable.length; ctr1++){
+                                    if(array[ctr].lexeme == $scope.symbolTable[ctr1].identifier){
                                         if($scope.symbolTable[ctr1].type == "NOOB"){
                                             $scope.terminalOutput.push({ content: "Error! Variable \"" + array[ctr].lexeme + "\" has no value"})
                                             return "error"
-                                        } else if(!isNaN(symbolTable[ctr1].value)){
-                                            array[ctr].lexeme = symbolTable[ctr1].value
+                                        } else if(!isNaN($scope.symbolTable[ctr1].value)){
+                                            array[ctr].lexeme = $scope.symbolTable[ctr1].value
                                             array[ctr].classification = "Int Literal"
                                             break
                                         } else {
@@ -830,7 +830,7 @@
                                             return "error"
                                         }
                                     }
-                                    if(ctr1 == symbolTable.length - 1){
+                                    if(ctr1 == $scope.symbolTable.length - 1){
                                         $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + array[ctr].lexeme + "\"" })
                                         return "error"
                                     }
@@ -889,25 +889,25 @@
                     }
                     return parseFloat(array[0].lexeme)
                 }
-                $scope.getCondValue = function(array1, symbolTable){
+                $scope.getCondValue = function(array1){
                     var array = array1.slice()
                     var ctr = 0
                     var ctr1
                     while(ctr < array.length){
                         if(array[ctr].classification == "Variable Identifier"){
-                            if(symbolTable.length != 0){
-                                for(ctr1 = 0; ctr1 < symbolTable.length; ctr1++){
-                                    if(array[ctr].lexeme == symbolTable[ctr1].identifier){
+                            if($scope.symbolTable.length != 0){
+                                for(ctr1 = 0; ctr1 < $scope.symbolTable.length; ctr1++){
+                                    if(array[ctr].lexeme == $scope.symbolTable[ctr1].identifier){
                                         if($scope.symbolTable[ctr1].type == "NOOB" || $scope.symbolTable.value == ""){
                                             $scope.terminalOutput.push({ content: "Error! Variable \"" + array[ctr].lexeme + "\" has no value"})
                                             return "error"
                                         } else {
-                                            array[ctr].lexeme = symbolTable[ctr1].value
-                                            array[ctr].classification = symbolTable[ctr1].type
+                                            array[ctr].lexeme = $scope.symbolTable[ctr1].value
+                                            array[ctr].classification = $scope.symbolTable[ctr1].type
                                             break
                                         }
                                     }
-                                    if(ctr1 == symbolTable.length - 1){
+                                    if(ctr1 == $scope.symbolTable.length - 1){
                                         $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + array[ctr].lexeme + "\"" })
                                         return "error"
                                     }
@@ -949,7 +949,7 @@
                                 }
                                 array.splice(ctr + 1, 1)
                             }
-                            array[ctr].lexeme = $scope.getExprValue(expressionArray, $scope.symbolTable)
+                            array[ctr].lexeme = $scope.getExprValue(expressionArray)
                             parseFloat(array[ctr].lexeme) % 1 == 0? array[ctr].classification = "Int Literal" : array[ctr].classification = "Float Literal"
                         }
                         if(ctr >= 1 && array[ctr - 1].classification == "Not Operator" && (array[ctr].classification == "Boolean Literal" || array[ctr].classification == "String Literal")){
@@ -1241,7 +1241,7 @@
                                   accArray[0].classification == "Infinite Arity And Operator" ||
                                   accArray[0].classification == "Is Equal Operator" ||
                                   accArray[0].classification == "Is Not Equal Operator"){
-                                  value1 = $scope.getCondValue(accArray, $scope.symbolTable)
+                                  value1 = $scope.getCondValue(accArray)
                                   if(value1 != "error"){
                                       if($scope.symbolTable.length == 0){
                                           $scope.symbolTable.push({
@@ -1294,7 +1294,7 @@
                                               }
                                               accArray.splice(0, 1)
                                           }
-                                          var value2 = $scope.getExprValue(expressionArray, $scope.symbolTable)
+                                          var value2 = $scope.getExprValue(expressionArray)
                                           if(value2 != "error"){
                                               value1 = value1 + value2.toString()
                                           } else {
@@ -1365,7 +1365,7 @@
                                                   accArray.splice(0, 1)
                                               }
                                           }
-                                          var value2 = $scope.getCondValue(expressionArray, $scope.symbolTable)
+                                          var value2 = $scope.getCondValue(expressionArray)
                                           if(value2 != "error"){
                                               value1 = value1 + value2.toString()
                                           } else {
@@ -1425,7 +1425,7 @@
                                       }
                                   }
                               } else {
-                                  value1 = $scope.getExprValue(accArray, $scope.symbolTable)
+                                  value1 = $scope.getExprValue(accArray)
                                   if(value1 != "error"){
                                       if($scope.symbolTable.length == 0){
                                           $scope.symbolTable.push({
@@ -1523,9 +1523,9 @@
                                   ctr1++
                           }
                           if(accArray[0].classification == "Sum Operator" || accArray[0].classification == "Difference Operator" || accArray[0].classification == "Quotient Operator" || accArray[0].classification == "Product Operator" || accArray[0].classification == "Modulo Operator" || accArray[0].classification == "Min Operator" || accArray[0].classification == "Max Operator"){
-                            value1 = $scope.getExprValue(accArray, $scope.symbolTable)
+                            value1 = $scope.getExprValue(accArray)
                           } else {
-                            value1 = $scope.getCondValue(accArray, $scope.symbolTable)
+                            value1 = $scope.getCondValue(accArray)
                           }
                           if(value1 != "error"){
                               if(value1 == "WIN" || value1 == "FAIL"){
@@ -1612,7 +1612,7 @@
                                                   opArr[0].classification == "Modulo Operator" ||
                                                   opArr[0].classification == "Min Operator" ||
                                                   opArr[0].classification == "Max Operator")){
-                                              var value1 = $scope.getExprValue(opArr, $scope.symbolTable)
+                                              var value1 = $scope.getExprValue(opArr)
                                               if(value1 != "error"){
                                                   visibleStr = visibleStr + value1
                                               } else {
@@ -1628,7 +1628,7 @@
                                                   opArr[0].classification == "Is Not Equal Operator" ||
                                                   opArr[0].classification == "Infinite Arity Or Operator" ||
                                                   opArr[0].classification == "Infinite Arity And Operator")){
-                                              var value1 = $scope.getCondValue(opArr, $scope.symbolTable)
+                                              var value1 = $scope.getCondValue(opArr)
                                               if(value1 != "error"){
                                                   visibleStr = visibleStr + value1
                                               } else {
