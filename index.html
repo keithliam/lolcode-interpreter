@@ -1084,41 +1084,20 @@
                     return array[0].lexeme
                 }
                 $scope.getTerminalInput = function(){
-                    // var input = prompt("Enter input");
-                    // var deferred = $q.defer()
-                    // deferred.resolve(input)
-                    // return deferred.promise
-                    // console.log($scope.terminalInput)
-                    console.log($scope.clicked)
+                    $scope.scanning = true
+                    var deferred = $q.defer()
                     if($scope.clicked == true){
-                        var deferred = $q.defer()
-                        // console.log("DSFKHASLDK")
-
                         deferred.resolve($scope.terminalInput)
-                        $scope.terminalOutput.push({ content: $scope.terminalInput })
-                        $scope.terminalInput = ''
-                        // console.log(deferred.promise)
-
-                        $scope.scanning = false
-                        // console.log("got ")
                         return deferred.promise
                     } else {
-                        // var deferred = $q.defer()
-                        // deferred.resolve("kdsahgkjdsag;dsha;lkfjds")
-                        // return deferred.promise
-                            var deferred = $q.defer()
-                            deferred.resolve(false)
-                            return deferred.promise
-                            // $scope.getTerminalInput().then(function(input){
-                            //     return input
-                            // })
+                        deferred.resolve(false)
+                        return deferred.promise
                     }
                 }
                 $scope.symbolTable = []
                 $scope.semanticAnalyzer = function(array){
                     // console.log(array)
                     // return "error"
-
                     var ctr
                     var ctr1 = 0
                     var ctr3
@@ -1780,7 +1759,6 @@
                           })
                           $scope.terminalOutput.push({ content: $scope.symbolTable[$scope.symbolTable.length - 1].value })
                         } else if(array[ctr].classification == "Input Keyword"){
-                            $scope.scanning = true
                             $('#lineInput').focus()
                             var nextArr = []
                             for(ctr1 = ctr + 1; ctr1 < array.length; ctr1++){
@@ -1788,26 +1766,20 @@
                             }
                             var thiss = $scope.getTerminalInput()
                             var saveCtr = ctr
-                            // console.log(thiss)
                             thiss.then(function again(input){
                                   if(input == false){
                                     $timeout(function(){
-                                        // console.log("sacnnign")
                                         $scope.getTerminalInput().then(again)
-
                                     }, 100)
                                   } else {
-                                    // console.log(input)
-                            //         console.log(saveCtr + '---jkdsafhlsa')
-                            //         console.log(array)
-                                    // var input = prompt('Enter input: ')
+                                        $scope.terminalOutput.push({ content: $scope.terminalInput })
+                                        $scope.terminalInput = ''
+
                                       if($scope.symbolTable.length != 0){
                                           for(ctr1 = 0; ctr1 < $scope.symbolTable.length; ctr1++){
                                               if(array[saveCtr + 1].lexeme == $scope.symbolTable[ctr1].identifier){
                                                   $scope.symbolTable[ctr1].value = input
                                                   $scope.symbolTable[ctr1].type = "String Literal"
-                                                  // console.log("type -------> " + $scope.symbolTable[ctr1].type)
-                                                  // $scope.terminalOutput.push({content: "ldskafjlksdjf"})
                                                     $scope.semanticAnalyzer(nextArr)
                                                   break
                                               }
@@ -1816,7 +1788,6 @@
                                                   return "error"
                                               }
                                           }
-                                          // $scope.terminalOutput.push({ content: input })
                                       } else {
                                           $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + array[saveCtr + 1].lexeme + "\"" })
                                           return "error"
@@ -1829,6 +1800,7 @@
                     // console.log($scope.symbolTable)
                 }
                 $scope.splitCode = function(){
+                    $scope.scanning = false
                     $scope.clicked = false
                     $scope.symbolTable = []
                     $scope.comment = ''
@@ -1881,9 +1853,12 @@
                 // $scope.terminalOutput = [{content:"You have an error in your sql syntax"}, {content:"Error! Ugly user found."}]
                 $scope.terminalOutput = []
                 $scope.addLine = function(){
+                    // console.log($scope.scanning)
                     if(!$scope.scanning){
                         $scope.terminalOutput.push({ content: $scope.terminalInput })
                         $scope.terminalInput = ""
+                    } else {
+                        $scope.scanning = false
                     }
                     // console.log($scope.terminalOutput)
                 }
@@ -1925,12 +1900,11 @@
                 $scope.clicked = false
                 $scope.click = function(){
                     $scope.clicked = true
-                    $scope.addLine()
                 }
                 $scope.scanning = false
                 $scope.unclick = function(){
-                    console.log("unclicked")
                     $scope.clicked = false
+                    $scope.addLine()
                 }
             }])
         </script>
@@ -2035,7 +2009,7 @@
                     </tr>
                     <tr>
                         <td class="caret yellow-text">></td>
-                        <td><input id="lineInput" ng-keyup="$event.keyCode == 13 && unclick()" ng-keydown="$event.keyCode == 13 && click()" ng-model="terminalInput"></input></td>
+                        <td><input id="lineInput" ng-keyup="$event.keyCode == 13 && unclick()" ng-keydown="($event.keyCode == 13 && click()) || (($event.ctrlKey || $event.metaKey) && $event.keyCode == 13 && splitCode())" ng-model="terminalInput"></input></td>
                     </tr>
                 </table>
             </div>
