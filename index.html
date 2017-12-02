@@ -1117,7 +1117,7 @@
                                 // console.log("TRUE", ctr)
                                 // console.log("----------------------")
                                 while(!(condCtr == 1 && (array[ctr].classification == "Else Keyword" || array[ctr].classification == "Conditional Delimiter"))){  
-                                    if(array[ctr].classification == "If Keyword"){
+                                    if(array[ctr].classification == "If Keyword" || array[ctr].classification == "Switch Case Keyword"){
                                         condCtr++
                                     } else if(array[ctr].classification == "Conditional Delimiter"){
                                         condCtr--
@@ -1133,7 +1133,7 @@
                                 $scope.semanticAnalyzer(accArray)
                                 accArray = []
                                 while(!(condCtr == 0 && array[ctr].classification == "Conditional Delimiter")){
-                                    if(array[ctr + 1].classification == "If Keyword"){
+                                    if(array[ctr + 1].classification == "If Keyword" || array[ctr].classification == "Switch Case Keyword"){
                                         condCtr++
                                     } else if(array[ctr + 1].classification == "Conditional Delimiter"){
                                         condCtr--
@@ -1148,7 +1148,7 @@
                                 while(!(condCtr == 1 && array[ctr].classification == "Else Keyword")){
                                     // console.log(array[ctr])
                                     // console.log(condCtr)
-                                    if(array[ctr].classification == "If Keyword"){
+                                    if(array[ctr].classification == "If Keyword" || array[ctr].classification == "Switch Case Keyword"){
                                         condCtr++
                                     } else if(array[ctr].classification == "Conditional Delimiter"){
                                         condCtr--
@@ -1159,7 +1159,7 @@
                                 // console.log(condCtr)
                                 while(!(condCtr == 0 && array[ctr].classification == "Conditional Delimiter")){
                                     // console.log(condCtr)
-                                    if(array[ctr + 1].classification == "If Keyword"){
+                                    if(array[ctr + 1].classification == "If Keyword" || array[ctr].classification == "Switch Case Keyword"){
                                         condCtr++
                                     } else if(array[ctr + 1].classification == "Conditional Delimiter"){
                                         condCtr--
