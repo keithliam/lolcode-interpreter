@@ -1226,7 +1226,7 @@
                             }
                             // console.log()
                             accArray = []
-                            while( !(condCtr == 0 && array[ctr].classification == "Conditional Delimiter")) {
+                            while(!(condCtr == 0 && array[ctr].classification == "Conditional Delimiter")) {
                                 // console.log(array[ctr])
                                 // console.log(condCtr)
                                 if (array[ctr].lexeme == "GTFO") {
@@ -1262,16 +1262,20 @@
                             // console.log(array[ctr + 2].classification)
                           if(array[ctr + 2].classification == "Initial Assignment" || array[ctr + 2].classification == "Assignment Keyword"){
                             if(array[ctr + 2].classification == "Assignment Keyword"){
-                                for(ctr1 = 0; ctr1 < $scope.symbolTable.length; ctr1++){
-                                    // console.log(ctr1 + " = " + ($scope.symbolTable.length - 1) + "\n" + array[ctr + 1].lexeme + " = " + $scope.symbolTable[ctr1].identifier)
-                                    if(array[ctr + 1].lexeme != $scope.symbolTable[ctr1].identifier){
-                                        break
+                                if($scope.symbolTable.length != 0){
+                                    for(ctr1 = 0; ctr1 < $scope.symbolTable.length; ctr1++){
+                                        // console.log(ctr1 + " = " + ($scope.symbolTable.length - 1) + "\n" + array[ctr + 1].lexeme + " = " + $scope.symbolTable[ctr1].identifier)
+                                        if(array[ctr + 1].lexeme != $scope.symbolTable[ctr1].identifier){
+                                            break
+                                        }
+                                        if(ctr1 == $scope.symbolTable.length - 1 && array[ctr + 1].lexeme != $scope.symbolTable[ctr1].identifier){
+                                            $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + array[ctr + 1].lexeme + "\"" })
+                                            return "error"
+                                        }
                                     }
-                                    if(ctr1 == $scope.symbolTable.length - 1 && array[ctr + 1].lexeme != $scope.symbolTable[ctr1].identifier){
-                                        $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + array[ctr + 1].lexeme + "\"" })
-
-                                        return "error"
-                                    }
+                                } else {
+                                    $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + array[ctr + 1].lexeme + "\"" })
+                                    return "error"
                                 }
                             }
                               ctr1 = 0
