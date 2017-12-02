@@ -842,7 +842,7 @@
                 $scope.getExprValue = function(array1, symbolTable){
 
                     // console.log("-----------------")
-                    console.log(array1)
+                    // console.log(array1)
                     var array = array1.slice()
                     var ctr = 0
                     var ctr1
@@ -1097,6 +1097,7 @@
                 $scope.symbolTable = []
                 $scope.semanticAnalyzer = function(array){
                     // console.log(array)
+                    // console.log("---------------")
                     // return "error"
                     var ctr
                     var ctr1 = 0
@@ -1106,40 +1107,65 @@
                     var condCtr = 0
                     // console.log(array)
                     for(ctr = 0; ctr < array.length; ctr++){
+                        // console.log(ctr)
+                        // console.log(array[ctr])
                         // if(ctr>11){$scope.terminalOutput.push({ content: " shet" + $scope.symbolTable[0].type + " " })}
-                        if (array[ctr].classification == "If Keyword") {
+                        if(array[ctr].classification == "If Keyword") {
+                            condCtr++
+                            ctr += 3
                             if($scope.symbolTable[$scope.symbolTable.length - 1].value == "WIN"){
                                 // console.log("TRUE", ctr)
-                                ctr += 2
-                                while (!(condCtr == 0 && array[ctr].classification == "Else Keyword")) {   
-                                    if (array[ctr].classification == "If Keyword") {
+                                // console.log("----------------------")
+                                while(!(condCtr == 1 && (array[ctr].classification == "Else Keyword" || array[ctr].classification == "Conditional Delimiter"))){  
+                                    if(array[ctr].classification == "If Keyword"){
                                         condCtr++
-                                    } else if (array[ctr].classification == "Conditional Delimiter") {
+                                    } else if(array[ctr].classification == "Conditional Delimiter"){
                                         condCtr--
                                     }
-                                    accArray.push(array[ctr])
+                                    accArray.push(array[ctr]) 
                                     ctr++
                                 }
-                                // console.log(ctr)
+                                // console.log(accArray)
+                                // return "error"
+                                // console.log("--------------------------")
+                                // console.log(accArray)
+                                // return "error"
                                 $scope.semanticAnalyzer(accArray)
                                 accArray = []
-                                while (array[ctr].classification != "Conditional Delimiter") {
+                                while(!(condCtr == 0 && array[ctr].classification == "Conditional Delimiter")){
+                                    if(array[ctr + 1].classification == "If Keyword"){
+                                        condCtr++
+                                    } else if(array[ctr + 1].classification == "Conditional Delimiter"){
+                                        condCtr--
+                                    }
                                     ctr++
                                 }
                             } else if($scope.symbolTable[$scope.symbolTable.length - 1].value == "FAIL"){
                                 // console.log($scope.symbolTable[$scope.symbolTable.length - 1].value)
                                 // console.log("FALSE")
-                                while (array[ctr].classification != "Else Keyword") {
+                                // console.log(array[ctr])
+                                // console.log(condCtr)
+                                while(!(condCtr == 1 && array[ctr].classification == "Else Keyword")){
+                                    // console.log(array[ctr])
+                                    // console.log(condCtr)
+                                    if(array[ctr].classification == "If Keyword"){
+                                        condCtr++
+                                    } else if(array[ctr].classification == "Conditional Delimiter"){
+                                        condCtr--
+                                    }
                                     ctr++
                                 }
                                 ctr++
-                                while(!(condCtr == 0 && array[ctr].classification != "Conditional Delimiter")){
-                                    if (array[ctr].classification == "If Keyword") {
+                                // console.log(condCtr)
+                                while(!(condCtr == 0 && array[ctr].classification == "Conditional Delimiter")){
+                                    // console.log(condCtr)
+                                    if(array[ctr + 1].classification == "If Keyword"){
                                         condCtr++
-                                    } else if (array[ctr].classification == "Conditional Delimiter") {
+                                    } else if(array[ctr + 1].classification == "Conditional Delimiter"){
                                         condCtr--
                                     }
                                     accArray.push(array[ctr])
+                                    // console.log(array[ctr])
                                     ctr++
                                 }
                                 $scope.semanticAnalyzer(accArray)
@@ -1148,7 +1174,8 @@
                                 $scope.terminalOutput.push({ content: "Error! Variable \"" + $scope.symbolTable[$scope.symbolTable.length - 1].value + "\" is not Boolean" })
                                 return "error"
                             }
-                        } else if (array[ctr].classification == "Switch Case Keyword") {
+                            ctr++
+                        } else if(array[ctr].classification == "Switch Case Keyword") {
                             while (!(array[ctr].classification == "Case Keyword" && ($scope.symbolTable[$scope.symbolTable.length-1].value == array[ctr+1].lexeme || ($scope.symbolTable[$scope.symbolTable.length-1].type == "String Literal" && $scope.symbolTable[$scope.symbolTable.length-1].value == array[ctr+2].lexeme))) && array[ctr].classification != "Default Case Keyword"){
                                 ctr++
                             }
@@ -1590,7 +1617,12 @@
                                     type:           "Boolean Literal"
                                 })
                             }
-                        } else if(ctr > 1 && array[ctr - 1].classification == "Newline" && ((array[ctr].classification == "And Operator" || array[ctr].classification == "Or Operator" || array[ctr].classification == "Xor Operator" || array[ctr].classification == "Not Operator" || array[ctr].classification == "Infinite Arity Or Operator" || array[ctr].classification == "Infinite Arity And Operator" || array[ctr].classification == "Is Equal Operator" || array[ctr].classification == "Is Not Equal Operator") || (array[ctr].classification == "Sum Operator" || array[ctr].classification == "Difference Operator" || array[ctr].classification == "Quotient Operator" || array[ctr].classification == "Product Operator" || array[ctr].classification == "Modulo Operator" || array[ctr].classification == "Min Operator" || array[ctr].classification == "Max Operator"))){
+                        } else if(ctr > 0 && array[ctr - 1].classification == "Newline" &&
+                            (
+                                (array[ctr].classification == "And Operator" || array[ctr].classification == "Or Operator" || array[ctr].classification == "Xor Operator" || array[ctr].classification == "Not Operator" || array[ctr].classification == "Infinite Arity Or Operator" || array[ctr].classification == "Infinite Arity And Operator" || array[ctr].classification == "Is Equal Operator" || array[ctr].classification == "Is Not Equal Operator")
+                            ||
+                                (array[ctr].classification == "Sum Operator" || array[ctr].classification == "Difference Operator" || array[ctr].classification == "Quotient Operator" || array[ctr].classification == "Product Operator" || array[ctr].classification == "Modulo Operator" || array[ctr].classification == "Min Operator" || array[ctr].classification == "Max Operator")
+                            )){
                           // console.log(array[ctr].classification)
                           ctr1 = 0
                           accArray = []
@@ -1612,7 +1644,7 @@
                             // console.log(value1)
                             // return "error"
                           } else {
-                            console.log("COND!!")
+                            // console.log("COND!!")
                             value1 = $scope.getCondValue(accArray, $scope.symbolTable)
                           }
                           if(value1 != "error"){
