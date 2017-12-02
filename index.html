@@ -1096,8 +1096,6 @@
                 }
                 $scope.symbolTable = []
                 $scope.semanticAnalyzer = function(array){
-                    console.log("---------------------")
-                    console.log(array)
                     var ctr
                     var ctr1 = 0
                     var ctr3
@@ -1109,13 +1107,13 @@
                             condCtr++
                             ctr += 3
                             if($scope.symbolTable[$scope.symbolTable.length - 1].value == "WIN"){
-                                while(!(condCtr == 1 && (array[ctr].classification == "Else Keyword" || array[ctr].classification == "Conditional Delimiter"))){  
+                                while(!(condCtr == 1 && (array[ctr].classification == "Else Keyword" || array[ctr].classification == "Conditional Delimiter"))){ 
                                     if(array[ctr].classification == "If Keyword" || array[ctr].classification == "Switch Case Keyword"){
                                         condCtr++
                                     } else if(array[ctr].classification == "Conditional Delimiter"){
                                         condCtr--
                                     }
-                                    accArray.push(array[ctr]) 
+                                    accArray.push(array[ctr])
                                     ctr++
                                 }
                                 $scope.semanticAnalyzer(accArray)
@@ -1138,7 +1136,6 @@
                                     ctr++
                                 }
                                 ctr++
-                                console.log()
                                 while(!(condCtr == 0 && array[ctr].classification == "Conditional Delimiter")){
                                     if(array[ctr + 1].classification == "If Keyword" || array[ctr].classification == "Switch Case Keyword"){
                                         condCtr++
@@ -1159,10 +1156,9 @@
                             while (!(array[ctr].classification == "Case Keyword" && ($scope.symbolTable[$scope.symbolTable.length-1].value == array[ctr+1].lexeme || ($scope.symbolTable[$scope.symbolTable.length-1].type == "String Literal" && $scope.symbolTable[$scope.symbolTable.length-1].value == array[ctr+2].lexeme))) && array[ctr - 1].classification != "Default Case Keyword"){
                                 ctr++
                             }
-                            // console.log(array[ctr].lexeme)
                             accArray = []
                             while(!(condCtr == 0 && array[ctr].classification == "Conditional Delimiter")) {
-                                if (array[ctr].lexeme == "GTFO") {
+                                if (array[ctr].lexeme == "GTFO" && condCtr == 0) {
                                     break
                                 } else if(array[ctr].classification == "If Keyword" || array[ctr].classification == "Switch Case Keyword"){
                                     condCtr++
@@ -1192,7 +1188,6 @@
                             if(array[ctr + 2].classification == "Assignment Keyword"){
                                 if($scope.symbolTable.length != 0){
                                     for(ctr1 = 0; ctr1 < $scope.symbolTable.length; ctr1++){
-                                        // console.log(ctr1 + " = " + ($scope.symbolTable.length - 1) + "\n" + array[ctr + 1].lexeme + " = " + $scope.symbolTable[ctr1].identifier)
                                         if(array[ctr + 1].lexeme != $scope.symbolTable[ctr1].identifier){
                                             break
                                         }
@@ -1211,8 +1206,6 @@
                                   accArray.push(array[ctr + 3 + ctr1])
                                   ctr1++
                               }
-                              // console.log("------------------------------")
-                              // console.log(accArray[0].classification)
                               if(accArray[0].classification == "Int Literal" ||
                                   accArray[0].classification == "Float Literal" ||
                                   accArray[0].classification == "String Delimiter" ||
@@ -1222,7 +1215,7 @@
                                           $scope.symbolTable.push({
                                               identifier:     array[ctr + 1].lexeme,
                                               value:          accArray[1].lexeme,
-                                              type:             "String Literal"           
+                                              type:             "String Literal"
                                           })
                                       } else {
                                           $scope.symbolTable.push({
@@ -1234,11 +1227,7 @@
                                   } else {
                                     for(ctr1 = 0; ctr1 < $scope.symbolTable.length; ctr1++){
                                       if(array[ctr + 1].lexeme == $scope.symbolTable[ctr1].identifier){
-                                          // console.log("HAHSJAHDKJAHDKJASLH")
-                                          // console.log(accArray[0].classification)
                                           if(accArray[0].classification == "String Delimiter"){
-                                              // console.log(accArray[1].lexeme)
-                                              // console.log($scope.symbolTable[ctr1])
                                               $scope.symbolTable[ctr1].value = accArray[1].lexeme
                                               $scope.symbolTable[ctr1].type = accArray[1].classification
                                           } else {
@@ -1257,7 +1246,6 @@
                                     }
                                   }
                               } else if(accArray[0].classification == "Variable Identifier"){
-                                  // console.log("over here")
                                   for(ctr1 = 0; ctr1 < $scope.symbolTable.length; ctr1++){
                                       if(accArray[0].lexeme == $scope.symbolTable[ctr1].identifier){
                                           for(ctr3 = 0; ctr3 < $scope.symbolTable.length; ctr3++){
@@ -1276,7 +1264,6 @@
                                           }
                                           break
                                       }
-                                      // console.log(ctr)
                                       if(ctr1 == $scope.symbolTable.length - 1){
                                           $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + array[ctr + 1].lexeme + "\"" })
                                           return "error"
@@ -1294,11 +1281,7 @@
                                   accArray[0].classification == "Infinite Arity And Operator" ||
                                   accArray[0].classification == "Is Equal Operator" ||
                                   accArray[0].classification == "Is Not Equal Operator"){
-                                  // console.log("------------()()()()------------")
-                                  // console.log(accArray)
-                                  // console.log("------------()()()()------------")
                                   value1 = $scope.getCondValue(accArray, $scope.symbolTable)
-                                  // console.log(value1)
                                   if(value1 != "error"){
                                       if($scope.symbolTable.length == 0){
                                           $scope.symbolTable.push({
@@ -1367,9 +1350,8 @@
                                        accArray[0].classification == "Is Not Equal Operator" ||
                                        accArray[0].classification == "Infinite Arity Or Operator" ||
                                        accArray[0].classification == "Infinite Arity And Operator"){
-                                          // console.log(accArray)
                                           var operands // noOfOperators == noOfLiterals - 1
-                                          var expressionArray = []    //------------------------------NOT OPERATOR----------------------------------------------
+                                          var expressionArray = []
                                           var infiniteFlag
                                           if(accArray[0].classification == "Infinite Arity And Operator" || accArray[0].classification == "Infinite Arity Or Operator"){
                                               infiniteFlag = 1
@@ -1383,7 +1365,6 @@
                                           while(accArray[0].classification == "Not Operator"){
                                               expressionArray.push(accArray[0])
                                               accArray.splice(0, 1)
-                                              // console.log("Not Removed")
                                           }
                                           if(accArray[0].classification == "And Operator" ||
                                               accArray[0].classification == "Or Operator" ||
@@ -1391,29 +1372,18 @@
                                               accArray[0].classification == "Is Equal Operator" ||
                                               accArray[0].classification == "Is Not Equal Operator"){
                                               operands = operands + 2
-                                              // console.log(operands)
                                               expressionArray.push(accArray[0])
                                               accArray.splice(0, 1)
                                           }
-                                          // console.log("---------------------->")
-                                          // console.log(accArray[0])
                                           while(operands != 0 || infiniteFlag != -1){
-                                              // return "elj"
-                                              // console.log(accArray[0])
                                               expressionArray.push(accArray[0])
                                               if(accArray[0].classification == "Not Operator"){
                                                   accArray.splice(0, 1)
-                                                  // console.log("Not Removed")
                                               } else if(infiniteFlag == operands && (accArray[0].classification == "Boolean Literal" || accArray[0].classification == "Variable Identifier")){
-                                                  // console.log("fds")
                                                   accArray.splice(0, 1)
                                               } else if(accArray[0].classification == "Boolean Literal" || accArray[0].classification == "Int Literal" || accArray[0].classification == "Float Literal" || accArray[0].classification == "String Literal" || accArray[0].classification == "Variable Identifier"){
-                                                  // console.log(accArray[0])
                                                   operands--
                                                   accArray.splice(0, 1)
-                                                  // console.log("minus one operand = " + operands)
-                                                  // console.log(accArray[0])
-                                                  // console.log(infiniteFlag + " " + operands)
                                               } else if(accArray[0].classification == "Infinite Arity And Operator" || accArray[0].classification == "Infinite Arity Or Operator"){
                                                   infiniteFlag = operands
                                                   if(accArray[1].classification != "Boolean Literal" || accArray[1].classification != "Variable Identifier"){
@@ -1434,13 +1404,10 @@
                                                   operands++
                                                   accArray.splice(0, 1)
                                               } else {
-                                                  // console.log(accArray[0])
                                                   accArray.splice(0, 1)
                                               }
                                           }
-                                          // console.log(expressionArray, "hey")
                                           var value2 = $scope.getCondValue(expressionArray, $scope.symbolTable)
-                                          // console.log("-----------------------------> " + value2)
                                           if(value2 != "error"){
                                               value1 = value1 + value2.toString()
                                           } else {
@@ -1470,7 +1437,6 @@
                                           accArray.splice(0, 1)
                                       }
                                   }
-                                  // $scope.terminalOutput.push({ content: "jdsaklhfjksh" })
                                   if($scope.symbolTable.length == 0){
                                       $scope.symbolTable.push({
                                           identifier:     array[ctr + 1].lexeme,
@@ -1501,9 +1467,7 @@
                                       }
                                   }
                               } else {
-                                  // console.log("SUM OF")
                                   value1 = $scope.getExprValue(accArray, $scope.symbolTable)
-                                  // console.log("VALUE: " + value1)
                                   if(value1 != "error"){
                                       if($scope.symbolTable.length == 0){
                                           $scope.symbolTable.push({
@@ -1535,7 +1499,6 @@
                           } else {
                                 if($scope.symbolTable.length != 0){
                                   for(ctr1 = 0; ctr1 < $scope.symbolTable.length; ctr1++){
-                                      // console.log("sdafhjksad")
                                       if(array[ctr + 1].lexeme == $scope.symbolTable[ctr1].identifier){
                                           $scope.symbolTable[ctr1].value = ""
                                           $scope.symbolTable[ctr1].type = "NOOB"
@@ -1561,13 +1524,10 @@
                         } else if(ctr > 0 && array[ctr - 1].classification == "Newline" &&
                             (array[ctr].classification == "Boolean Literal" || array[ctr].classification == "Variable Identifier") &&
                             array[ctr + 1].classification == "Newline"){
-                            // console.log("fdksjh")
                             if(array[ctr].classification == "Variable Identifier"){
                                 if($scope.symbolTable.length != 0){
                                     for(ctr1 = 0; ctr1 < $scope.symbolTable.length; ctr1++){
-                                        // console.log($scope.symbolTable[ctr1].identifier + " == " + array[ctr].lexeme)
                                         if($scope.symbolTable[ctr1].identifier == array[ctr].lexeme){
-                                            // console.log("PASOK")
                                             if($scope.symbolTable[ctr1].type == "NOOB" || $scope.symbolTable[ctr1].value == ""){
                                                 $scope.terminalOutput.push({ content: "Error! Variable \"" + array[ctr].lexeme + "\" has no value" })
                                                 return "error"
@@ -1638,14 +1598,10 @@
                           var opCtr = 0
                           var opArr = []
                           accArray = []
-                          // console.log(array[ctr + 1])
                           for(ctr1 = 1; array[ctr + ctr1].classification != "Newline"; ctr++){
                               accArray.push(array[ctr + ctr1])
                           }
-                          // console.log(accArray)
                           for(ctr1 = 0; ctr1 < accArray.length; ctr1++){
-                              // console.log(ctr1 + "---" + accArray.length)
-                              // console.log("---------------------------> "+ accArray[ctr1].classification)
                               if(accArray[ctr1].classification == "Sum Operator" ||
                                          accArray[ctr1].classification == "Difference Operator" ||
                                          accArray[ctr1].classification == "Product Operator" ||
@@ -1663,11 +1619,8 @@
                                        accArray[ctr1].classification == "Is Not Equal Operator" ||
                                        accArray[ctr1].classification == "Infinite Arity Or Operator" ||
                                        accArray[ctr1].classification == "Infinite Arity And Operator"){
-                                  // $scope.terminalOutput.push({ content: "Error! Cannot cast boolean to string value" })
-                                  // return "error"
                                   opArr.push(accArray[ctr1])
                                   opCtr++
-                                  // console.log("djksfh")
                               } else if(accArray[ctr1].classification == "Int Literal" ||
                                       accArray[ctr1].classification == "Float Literal" ||
                                       accArray[ctr1].classification == "Boolean Literal" ||
@@ -1677,7 +1630,6 @@
                                       for(ctr3 = 0; ctr3 < $scope.symbolTable.length; ctr3++){
                                           if(accArray[ctr1].lexeme == $scope.symbolTable[ctr3].identifier){
                                               visibleStr = visibleStr + $scope.symbolTable[ctr3].value
-                                              // console.log("found")
                                               break
                                           }
                                           if(ctr3 == $scope.symbolTable.length - 1){
@@ -1690,8 +1642,6 @@
                                           return "error"
                                       }
                                   } else {
-                                      // console.log(opArr.length)
-                                      // console.log("SUM OR BOTH")
                                       if(opArr.length == 0){
                                           visibleStr = visibleStr + accArray[ctr1].lexeme
                                       } else {
@@ -1721,11 +1671,7 @@
                                                   opArr[0].classification == "Is Not Equal Operator" ||
                                                   opArr[0].classification == "Infinite Arity Or Operator" ||
                                                   opArr[0].classification == "Infinite Arity And Operator")){
-                                              // console.log("dksljaf")
-                                              // console.log("---------------")
-                                              // console.log(opArr)
                                               var value1 = $scope.getCondValue(opArr, $scope.symbolTable)
-                                              // console.log("Output--------> " + value1)
                                               if(value1 != "error"){
                                                   visibleStr = visibleStr + value1
                                               } else {
@@ -1806,10 +1752,7 @@
                             lexeme: "\\n",
                             classification: "Newline"
                         })
-                        // console.log(lexe)
                     }
-                    // console.log($scope.lexemesArray)
-                    // return "error"
                     for(ctr = 0; ctr < $scope.lexemesArray.length; ctr ++){
                         if($scope.lexemesArray[ctr].classification != "Newline"){
                             $scope.lexemesDisplay.push($scope.lexemesArray[ctr])
@@ -1828,11 +1771,6 @@
                     if($scope.parser($scope.lexemesArray) != "error"){
                         $scope.semanticAnalyzer($scope.lexemesArray)
                     }
-                    // console.log("----------- lexemes array ------------")
-                    // console.log($scope.lexemesArray)
-                    // console.log($scope.lexemesDisplay)
-                    // console.log("-------------------------------")
-                    // return "error"
                 }
                 $scope.fileName = "Upload Code"
                 $scope.uploaded = function(){
@@ -1840,17 +1778,14 @@
                     $scope.$apply()
                     $scope.add()
                 }
-                // $scope.terminalOutput = [{content:"You have an error in your sql syntax"}, {content:"Error! Ugly user found."}]
                 $scope.terminalOutput = []
                 $scope.addLine = function(){
-                    // console.log($scope.scanning)
                     if(!$scope.scanning){
                         $scope.terminalOutput.push({ content: $scope.terminalInput })
                         $scope.terminalInput = ""
                     } else {
                         $scope.scanning = false
                     }
-                    // console.log($scope.terminalOutput)
                 }
                 $scope.focusTerminal = function(){
                     $('#lineInput').focus()
@@ -1860,11 +1795,9 @@
                 }
                 $scope.addTabs = function(){
                     var ctr
-                    // console.log('length: ' + $scope.textarea.length)
                     var cursorStart = $('#textarea1').get(0).selectionStart
                     var cursorEnd = $('#textarea1').get(0).selectionEnd
                     event.preventDefault()
-                    // console.log('end:' + cursorEnd + ' last: ' + $scope.textarea.length - 1)
                     if(cursorStart != cursorEnd){
                         $scope.textarea = $scope.textarea.slice(0, cursorStart) +  $scope.textarea.slice(cursorEnd, $scope.textarea.length)
                     }
@@ -1872,13 +1805,9 @@
                         if($scope.textarea[ctr] == '\n' || ctr == 0){
                             var tabs = ''
                             var save = ctr
-                            // console.log(">" + $scope.textarea[ctr] + "<>" + $scope.textarea[cursorStart - 1])
                             for(ctr = ctr + 1; ctr < $scope.textarea.length && ($scope.textarea[ctr] == ' ' || $scope.textarea[ctr] == '\t'); ctr++){
                                 tabs = tabs + $scope.textarea[ctr]
                             }
-                            // console.log(cursorStart + ' - ' + cursorEnd)
-                            // console.log('length: ' + $scope.textarea.length)
-                            // console.log('tabs: >' + tabs + '<')
                             $scope.textarea = $scope.textarea.slice(0, cursorStart) + '\n' + tabs + $scope.textarea.slice(cursorStart, $scope.textarea.length)
                             $timeout(function(){
                                 $('#textarea1').get(0).setSelectionRange(cursorStart + tabs.length + 1, cursorStart + tabs.length + 1)
