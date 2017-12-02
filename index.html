@@ -1183,7 +1183,6 @@
                     var value1
                     var condCtr = 0
                     for(ctr = 0; ctr < array.length; ctr++){
-                        console.log(array[ctr].classification)
                         if(array[ctr].classification == "If Keyword") {
                             condCtr++
                             ctr += 3
@@ -1872,7 +1871,6 @@
                           }
                           accArray = []
                         } else if(array[ctr].classification == "Output Keyword"){
-                            console.log("dklsfj")
                           var visibleStr = ""
                           var opCtr = 0
                           var opArr = []
@@ -1904,7 +1902,7 @@
                                       accArray[ctr1].classification == "Float Literal" ||
                                       accArray[ctr1].classification == "Boolean Literal" ||
                                       accArray[ctr1].classification == "Variable Identifier" ||
-                                      accArray[ctr1].classification == "String Literal"){
+                                      accArray[ctr1].classification == "String Literal" || (accArray[ctr1].classification == "Typecast Operator" && opCtr == 0)){
                                   if(opArr.length == 0 && accArray[ctr1].classification == "Variable Identifier"){
                                       for(ctr3 = 0; ctr3 < $scope.symbolTable.length; ctr3++){
                                           if(accArray[ctr1].lexeme == $scope.symbolTable[ctr3].identifier){
@@ -1925,6 +1923,12 @@
                                           visibleStr = visibleStr + accArray[ctr1].lexeme
                                       } else {
                                           opArr.push(accArray[ctr1])
+                                          if(accArray[ctr1].classification == "Typecast Operator"){
+                                            opArr.push(accArray[ctr1 + 1])
+                                            opArr.push(accArray[ctr1 + 2])
+                                            opArr.push(accArray[ctr1 + 3])
+                                            ctr1 += 3
+                                          }
                                           if(opCtr == 0 &&
                                                   (opArr[0].classification == "Sum Operator" ||
                                                   opArr[0].classification == "Difference Operator" ||
@@ -1959,6 +1963,12 @@
                                           }
                                       }
                                   }
+                              } else if(opCtr != 0 && accArray[ctr1].classification == "Typecast Operator"){
+                                opArr.push(accArray[ctr1])
+                                opArr.push(accArray[ctr1 + 1])
+                                opArr.push(accArray[ctr1 + 2])
+                                opArr.push(accArray[ctr1 + 3])
+                                ctr1 += 3
                               } else if(accArray[ctr1].classification == "Typecast Operator"){
                                 for(ctr3 = 0; ctr3 < $scope.symbolTable.length; ctr3++){
                                     if(accArray[ctr1 + 1].lexeme == $scope.symbolTable[ctr3].identifier){
@@ -1997,13 +2007,13 @@
                                     $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + accArray[ctr1].lexeme + "\"" })
                                     return "error"
                                 }
+                                ctr += 3
                               } else if(accArray[ctr1].lexeme == "AN"){
                                   if(opCtr > 0){
                                       opArr.push(accArray[ctr1])
                                       opCtr--
                                   }
                               }
-                              ctr1 += 4
                           }
                           accArray = []
                           $scope.symbolTable.push({
