@@ -610,16 +610,18 @@
                                 continue
                             }
                             else if(line[j].classification == "Typecast Operator") {
+                              var opCtr2 = 0
+                              var opArray2 = []
                               while(line[++j].classification != "Assignment Operator") {
-                                opArray.push(line[j])
+                                opArray2.push(line[j])
                                 if (line[j].classification == "Variable Identifier" || line[j].classification == "Int Literal" || line[j].classification == "Float Literal") {
-                                  if(opCtr == 0) {
-                                    if($scope.getExpr(opArray)){
-                                      opArray = []
+                                  if(opCtr2 == 0) {
+                                    if($scope.getExpr(opArray2)){
+                                      opArray2 = []
                                       break
                                     }
                                     else {
-                                      $scope.terminalOutput.push({ content: "Line " + lineNo + ": Syntax Error! Error in expression to be typecasted!" })
+                                      $scope.terminalOutput.push({ content: "Line " + lineNo + ": Syntax Error lulz! Error in expression to be typecasted!" })
                                       return "error"
                                     }
                                   }
@@ -631,10 +633,10 @@
                                         line[j].classification == "Modulo Operator" ||
                                         line[j].classification == "Min Operator" ||
                                         line[j].classification == "Max Operator"){
-                                    opCtr++
+                                    opCtr2++
                                 }
                                 else if(line[j].classification == "An Keyword"){
-                                  opCtr--
+                                  opCtr2--
                                 }
                                 else {
                                   $scope.terminalOutput.push({ content: "Line " + lineNo + ": Syntax Error! Error in expression to be Typecasted!" })
@@ -648,6 +650,9 @@
                               if(line[++j].classification != "Type Literal") {
                                 $scope.terminalOutput.push({ content: "Line " + lineNo + ": Syntax Error! Missing type in MAEK!" })
                                 return "error"
+                              }
+                              if (opCtr > 0) {
+                                opArray.push(line[j-2])
                               }
                             }
                             else {
