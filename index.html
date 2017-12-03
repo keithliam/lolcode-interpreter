@@ -1968,7 +1968,7 @@
                                       accArray[ctr1].classification == "Float Literal" ||
                                       accArray[ctr1].classification == "Boolean Literal" ||
                                       accArray[ctr1].classification == "Variable Identifier" ||
-                                      accArray[ctr1].classification == "String Literal" || (accArray[ctr1].classification == "Typecast Operator" && opCtr == 0)){
+                                      accArray[ctr1].classification == "String Literal"){
                                   if(opArr.length == 0 && accArray[ctr1].classification == "Variable Identifier"){
                                       for(ctr3 = 0; ctr3 < $scope.symbolTable.length; ctr3++){
                                           if(accArray[ctr1].lexeme == $scope.symbolTable[ctr3].identifier){
@@ -2047,16 +2047,19 @@
                                                 $scope.terminalOutput.push({ content: "Error! Cannot parse NUMBR from " + $scope.symbolTable[ctr3].value })
                                                 return "error"
                                             }
-                                        } else if(accArray[ctr1 + 3].lexeme == "NUMBAR"){
+                                        }
+                                        else if(accArray[ctr1 + 3].lexeme == "NUMBAR"){
                                             if(!isNaN($scope.symbolTable[ctr3].value)){
                                                 visibleStr = visibleStr + parseFloat($scope.symbolTable[ctr3].value).toString()
                                             } else {
                                                 $scope.terminalOutput.push({ content: "Error! Cannot parse NUMBAR from " + $scope.symbolTable[ctr3].value })
                                                 return "error"
                                             }
-                                        } else if(accArray[ctr1 + 3].lexeme == "YARN"){
+                                        }
+                                        else if(accArray[ctr1 + 3].lexeme == "YARN"){
                                             visibleStr = visibleStr + $scope.symbolTable[ctr3].value.toString()
-                                        } else if(accArray[ctr1 + 3].lexeme == "TROOF"){
+                                        }
+                                        else if(accArray[ctr1 + 3].lexeme == "TROOF"){
                                             if($scope.symbolTable[ctr3].value == "WIN" || $scope.symbolTable[ctr3].value == "FAIL"){
                                                 visibleStr = visibleStr + $scope.symbolTable[ctr3].value
                                             } else {
@@ -2075,7 +2078,7 @@
                                     $scope.terminalOutput.push({ content: "Error! Undeclared variable \"" + accArray[ctr1].lexeme + "\"" })
                                     return "error"
                                 }
-                                ctr += 3
+                                ctr1 += 3
                               }
                               else if(accArray[ctr1].lexeme == "AN"){
                                   if(opCtr > 0){
