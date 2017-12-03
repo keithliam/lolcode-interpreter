@@ -633,7 +633,7 @@
                                         line[j].classification == "Max Operator"){
                                     opCtr++
                                 }
-                                else if(line[++j].classification == "An Keyword"){
+                                else if(line[j].classification == "An Keyword"){
                                   opCtr--
                                 }
                                 else {
@@ -641,7 +641,7 @@
                                   return "error"
                                 }
                               }
-                              if(line[j].classification != "Assignment Operator") {
+                              if(line[++j].classification != "Assignment Operator") {
                                 $scope.terminalOutput.push({ content: "Line " + lineNo + ": Syntax Error! Missing \"A\" keyword in MAEK!" })
                                 return "error"
                               }
