@@ -1974,7 +1974,7 @@
                                       accArray[ctr1].classification == "Float Literal" ||
                                       accArray[ctr1].classification == "Boolean Literal" ||
                                       accArray[ctr1].classification == "Variable Identifier" ||
-                                      accArray[ctr1].classification == "String Literal"){
+                                      accArray[ctr1].classification == "String Literal" || (accArray[ctr1].classification == "Typecast Operator" && opCtr == 0 && opArr.length != 0)){
                                   if(opArr.length == 0 && accArray[ctr1].classification == "Variable Identifier"){
                                       for(ctr3 = 0; ctr3 < $scope.symbolTable.length; ctr3++){
                                           if(accArray[ctr1].lexeme == $scope.symbolTable[ctr3].identifier){
